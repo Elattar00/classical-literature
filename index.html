@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Classical Literature</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Babel for JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.263.1"
+        }
+    }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --paper-bg: #f9f7f1;
+            --ink-color: #2c241b;
+            --accent-gold: #b48e43;
+            --accent-blue: #2c3e50;
+        }
+
+        body {
+            background-color: var(--paper-bg);
+            color: var(--ink-color);
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+        }
+
+        .serif-text {
+            font-family: 'Lora', serif;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1c4b0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b4a388; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .glass-panel {
+            background: rgba(249, 247, 241, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(180, 142, 67, 0.2);
+        }
+
+        /* Custom Animations */
+        @keyframes slideDown {
+            from { 
+                opacity: 0; 
+                transform: translateY(-20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .animate-slide-down {
+            animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import { createRoot } from 'react-dom/client';
+        import React, { useState, useEffect } from 'react';
+        import { 
+            BookOpen, Users, Scroll, Landmark, Clock, MapPin, Quote, 
+            Feather, ChevronRight, Star, MessageCircle, HelpCircle, 
+            Info, Home, Building2, UtensilsCrossed, Sparkles, Book, FileQuestion,
+            User, Crown, Shield, Sword, LayoutList, PenTool, Lightbulb, AlertTriangle, Music, Flame, ChevronDown
+        } from 'lucide-react';
+
+        // --- UI Components ---
+
+        const ClassicalHeader = ({ title, subtitle, icon: Icon }) => (
+            <div className="relative mb-12 text-center py-8">
+                <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#b48e43] to-transparent opacity-40"></div>
+                <div className="relative inline-flex flex-col items-center bg-[#f9f7f1] px-8 py-2 z-10">
+                    <div className="bg-[#2c3e50] text-[#b48e43] w-12 h-12 rounded-full flex items-center justify-center shadow-lg mb-4 border-2 border-[#b48e43]">
+                        {Icon && <Icon size={24} />}
+                    </div>
+                    <h2 className="text-4xl font-bold text-[#2c3e50] tracking-tight leading-tight">{title}</h2>
+                    {subtitle && <p className="text-sm font-bold text-[#b48e43] uppercase tracking-[0.2em] mt-2">{subtitle}</p>}
+                </div>
+            </div>
+        );
+
+        const CompactCharacterSection = ({ characters }) => (
+            <div className="mb-12">
+                <div className="bg-[#2c3e50] px-6 py-4 flex items-center justify-between rounded-t-lg border-b-4 border-[#b48e43]">
+                    <h3 className="text-amber-50 font-bold text-lg flex items-center gap-2">
+                        <Users size={18} className="text-[#b48e43]" /> Dramatis Personae
+                    </h3>
+                    <span className="text-xs text-stone-400 font-sans uppercase tracking-wider">{characters.length} Characters</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-b-lg border border-stone-200 border-t-0 shadow-sm">
+                    {characters.map((char, idx) => (
+                        <div key={idx} className="group p-4 border border-stone-100 rounded hover:border-[#b48e43] hover:shadow-sm transition-all bg-stone-50/50">
+                            <div className="flex justify-between items-start mb-2">
+                                <span className={`font-bold text-base ${char.type === 'protagonist' ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
+                                    {char.name}
+                                </span>
+                                {char.sub && <span className="text-[10px] text-white bg-stone-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold group-hover:bg-[#b48e43] transition-colors">{char.sub}</span>}
+                            </div>
+                            <div className="text-sm serif-text text-stone-600 leading-snug">
+                                {char.role}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const PlotBlock = ({ title, children, index }) => {
+            const [isOpen, setIsOpen] = useState(false);
+
+            return (
+                <div className="flex gap-4 sm:gap-6 mb-6 group relative">
+                    <div className="absolute left-[19px] top-10 bottom-[-24px] w-0.5 bg-stone-200 group-last:hidden"></div>
+                    
+                    <div className="flex flex-col items-center shrink-0 relative z-10">
+                        <div className={`w-10 h-10 rounded-full border-2 font-bold font-serif flex items-center justify-center shadow-sm transition-colors duration-200 ${isOpen ? 'bg-[#b48e43] text-white border-[#b48e43]' : 'bg-white border-[#b48e43] text-[#b48e43]'}`}>
+                            {index}
+                        </div>
+                    </div>
+                    
+                    <div className="flex-1">
+                        <button 
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="w-full text-left flex items-center justify-between bg-white p-4 rounded-lg border border-stone-200 shadow-sm hover:border-[#b48e43] transition-all group"
+                        >
+                            <h3 className={`font-serif font-bold text-lg ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>{title}</h3>
+                            <ChevronRight size={20} className={`text-stone-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+                        </button>
+                        
+                        {isOpen && (
+                            <div className="mt-2 text-stone-700 leading-7 serif-text bg-white/50 p-4 rounded-lg border-l-2 border-[#b48e43] animate-slide-down shadow-inner border-t border-stone-100">
+                                {children}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const QuestionBlock = ({ question, children }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            return (
+                <div className="mb-4 border border-stone-200 rounded-lg bg-white shadow-sm overflow-hidden group hover:border-[#b48e43] transition-colors">
+                    <button 
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full text-left p-5 flex items-start justify-between gap-4 select-none"
+                    >
+                        <div className="flex items-start gap-3">
+                            <HelpCircle size={20} className={`shrink-0 mt-0.5 transition-colors ${isOpen ? 'text-[#b48e43]' : 'text-stone-300 group-hover:text-[#b48e43]'}`} />
+                            <h4 className={`font-serif font-bold text-lg leading-snug ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
+                                {question}
+                            </h4>
+                        </div>
+                        <ChevronDown size={20} className={`shrink-0 text-stone-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    {isOpen && (
+                        <div className="px-5 pb-5 pt-0 animate-slide-down">
+                            <div className="pt-4 border-t border-stone-100 text-stone-700 leading-relaxed serif-text pl-8 border-l-2 border-l-stone-100 ml-2">
+                                {children}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const DetailedQuoteCard = ({ text, speaker, listener, analysis }) => (
+            <div className="bg-white border-l-4 border-[#b48e43] rounded-r-lg p-6 my-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                <div className="flex items-start gap-4 relative z-10">
+                    <div className="text-[#b48e43] opacity-20 shrink-0 mt-1">
+                        <Quote size={40} fill="currentColor" />
+                    </div>
+                    <div className="flex-1">
+                        <blockquote className="serif-text text-lg text-[#2c3e50] font-medium mb-4 leading-relaxed">
+                            "{text}"
+                        </blockquote>
+                        <div className="flex flex-wrap items-center gap-3 mb-3 text-xs uppercase tracking-wide font-bold">
+                            <span className="bg-[#f0f4f8] text-[#2c3e50] px-2 py-1 rounded">Speaker: {speaker}</span>
+                            {listener && <span className="text-stone-400">To: {listener}</span>}
+                        </div>
+                        <p className="text-sm text-stone-600 leading-relaxed border-t border-stone-100 pt-3">
+                            <span className="font-bold text-[#b48e43]">Analysis:</span> {analysis}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const AnalysisSection = ({ title, items, icon: Icon = BookOpen }) => (
+            <div className="my-10 bg-[#f8f9fa] rounded-xl border border-stone-200 p-6">
+                <h3 className="font-bold text-xl text-[#2c3e50] mb-6 flex items-center gap-2 border-b border-stone-200 pb-3">
+                    <Icon className="text-[#b48e43]" size={20}/> {title}
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                    {items.map((item, idx) => (
+                        <div key={idx}>
+                            <strong className="block text-[#2c3e50] mb-1 font-serif text-lg">{item.term}</strong>
+                            <p className="text-sm text-stone-600 leading-relaxed serif-text">{item.def}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const SpecTable = ({ items }) => (
+            <div className="my-8 border border-stone-200 rounded-lg overflow-hidden">
+                {items.map((item, i) => (
+                    <div key={i} className="flex flex-col md:flex-row border-b border-stone-100 last:border-0">
+                        <div className="md:w-1/3 bg-stone-50 p-4 font-bold text-[#2c3e50] text-sm uppercase tracking-wide flex items-center">{item.label}</div>
+                        <div className="md:w-2/3 bg-white p-4 text-stone-700 text-sm serif-text border-l border-stone-100">{item.value}</div>
+                    </div>
+                ))}
+            </div>
+        );
+
+        const ChorusDebate = ({ leftTitle, leftContent, rightTitle, rightContent }) => (
+            <div className="flex flex-col md:flex-row gap-0 my-8 rounded-xl overflow-hidden border border-stone-200 shadow-sm">
+                <div className="md:w-1/2 bg-[#2c3e50] p-8 text-stone-200 relative">
+                    <div className="absolute top-4 right-4 opacity-10"><Users size={40}/></div>
+                    <h4 className="font-serif font-bold text-lg text-[#b48e43] mb-3 pb-2 border-b border-stone-600">{leftTitle}</h4>
+                    <p className="text-sm leading-relaxed opacity-90 serif-text">{leftContent}</p>
+                </div>
+                <div className="md:w-1/2 bg-[#fffcf5] p-8 text-stone-800 relative">
+                    <div className="absolute top-4 right-4 opacity-10 text-[#b48e43]"><Users size={40}/></div>
+                    <h4 className="font-serif font-bold text-lg text-[#b48e43] mb-3 pb-2 border-b border-[#e5dcc5]">{rightTitle}</h4>
+                    <p className="text-sm leading-relaxed serif-text">{rightContent}</p>
+                </div>
+            </div>
+        );
+
+        const GlossaryTerm = ({ word, def }) => (
+            <div className="flex flex-col p-3 bg-white rounded border border-stone-100 shadow-sm hover:border-[#b48e43] transition-colors h-full">
+                <div className="text-[#2c3e50] text-xs font-black uppercase tracking-wider mb-1 text-[#b48e43]">{word}</div>
+                <div className="text-xs text-stone-600 serif-text leading-relaxed">{def}</div>
+            </div>
+        );
+
+        // --- Main Application ---
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('intro');
+            const [scrollProgress, setScrollProgress] = useState(0);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    const totalScroll = document.documentElement.scrollTop;
+                    const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    const scroll = `${totalScroll / windowHeight}`;
+                    setScrollProgress(Number(scroll));
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <div className="min-h-screen pb-24">
+                    <div className="fixed top-0 left-0 h-1 bg-[#b48e43] z-50 transition-all duration-100" style={{ width: `${scrollProgress * 100}%` }}></div>
+
+                    <header className="sticky top-0 z-40 glass-panel shadow-sm">
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-[#2c3e50] text-[#b48e43] w-10 h-10 rounded flex items-center justify-center shadow-sm border border-[#b48e43]">
+                                    <Landmark size={20} />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-[#2c3e50] tracking-tight leading-none">Classical Literature</h1>
+                                    <p className="text-[10px] font-bold text-[#b48e43] uppercase tracking-[0.2em] mt-0.5">Elattar</p>
+                                </div>
+                            </div>
+
+                            <nav className="flex p-1 bg-white/50 rounded-lg border border-stone-200/50 overflow-x-auto max-w-full no-scrollbar">
+                                {[
+                                    { id: 'intro', label: 'Intro & Origins' },
+                                    { id: 'lysistrata', label: 'Lysistrata' },
+                                    { id: 'birds', label: 'The Birds' },
+                                    { id: 'frogs', label: 'The Frogs' },
+                                    { id: 'prometheus', label: 'Prometheus Bound' },
+                                    { id: 'qbank', label: 'Question Bank' }
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`px-5 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all duration-200 whitespace-nowrap ${
+                                            activeTab === tab.id 
+                                            ? 'bg-[#2c3e50] text-white shadow-md' 
+                                            : 'text-stone-500 hover:text-[#2c3e50] hover:bg-stone-100'
+                                        }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+                    </header>
+
+                    <main className="max-w-4xl mx-auto px-4 md:px-6 py-10 relative z-10">
+
+                        {/* TAB 1: INTRODUCTION */}
+                        {activeTab === 'intro' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <ClassicalHeader title="The Classical Age" subtitle="Context & Foundations" icon={Scroll} />
+                                
+                                <div className="serif-text text-lg text-stone-700 mb-10 leading-relaxed">
+                                    <p className="mb-6">
+                                        We are in the classical days, a period defined by structure and philosophy. Drama in this era was written strictly according to the <strong>Aristotelian units</strong>: unity of time, unity of action, and unity of place.
+                                    </p>
+                                    
+                                    <div className="bg-white p-8 rounded-lg border-t-4 border-[#b48e43] shadow-sm mb-10">
+                                        <h3 className="font-sans font-bold text-2xl mb-6 text-[#2c3e50]">The Three Unities</h3>
+                                        <div className="grid md:grid-cols-3 gap-8">
+                                            <div className="text-center">
+                                                <Clock className="text-[#b48e43] mx-auto mb-3" size={28} />
+                                                <strong className="block text-[#2c3e50] mb-2 font-sans uppercase text-sm tracking-wide">Unity of Time</strong>
+                                                <p className="text-sm text-stone-600">The action should not exceed 24 hours. The dramatist must compress events into a 2-3 hour timeframe.</p>
+                                            </div>
+                                            <div className="text-center border-l border-r border-stone-100 px-4">
+                                                <MapPin className="text-[#b48e43] mx-auto mb-3" size={28} />
+                                                <strong className="block text-[#2c3e50] mb-2 font-sans uppercase text-sm tracking-wide">Unity of Place</strong>
+                                                <p className="text-sm text-stone-600">The entire action must happen in one physical location.</p>
+                                            </div>
+                                            <div className="text-center">
+                                                <Star className="text-[#b48e43] mx-auto mb-3" size={28} />
+                                                <strong className="block text-[#2c3e50] mb-2 font-sans uppercase text-sm tracking-wide">Unity of Action</strong>
+                                                <p className="text-sm text-stone-600">One main plot with no distracting subplots.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-6 items-start bg-[#2c3e50] text-stone-300 p-8 rounded-lg mb-12 shadow-lg">
+                                        <Feather size={40} className="text-[#b48e43] shrink-0 mt-1" />
+                                        <div>
+                                            <h3 className="font-serif font-bold text-xl text-white mb-2">Comparison: Classical vs. Shakespearean</h3>
+                                            <p className="leading-relaxed text-sm">
+                                                Classical literature is more demanding due to its constraints. A Shakespearean tragedy like <em>Macbeth</em> is about 450 pages because it does not stick to the three units (spanning years and countries). On the other hand, a classical play is only about 50 pages because it adheres strictly to these units, compressing the narrative density.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50] border-b border-stone-300 pb-2">Aristophanes (c. 450–388 BCE)</h3>
+                                    <div className="bg-[#fffcf5] border border-[#e5dcc5] p-6 rounded-lg">
+                                        <p className="text-stone-700 leading-relaxed mb-4">
+                                            He is the greatest representative of ancient Greek comedy and the only extant representative of the <strong>Old Comedy</strong>.
+                                        </p>
+                                        <p className="text-stone-700 leading-relaxed">
+                                            <strong>Old Comedy</strong> is characterized by bold fantasy, merciless invective, outrageous satire, and a chorus that plays a considerable part. Aristophanes belongs to the end of this phase; his last play has no choric element, marking the transition to Middle and New Comedy.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 2: LYSISTRATA */}
+                        {activeTab === 'lysistrata' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <ClassicalHeader title="Lysistrata" subtitle="411 BCE | The Anti-War Comedy" icon={Users} />
+
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12 flex gap-6 items-center">
+                                    <div className="hidden md:block bg-[#b48e43] text-white p-4 rounded-full">
+                                        <Info size={32} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-serif font-bold text-2xl mb-2 text-[#2c3e50]">In Brief</h3>
+                                        <p className="text-stone-700 leading-relaxed serif-text">
+                                            <em>Lysistrata</em> is a bawdy anti-war comedy. It is the account of one woman's extraordinary mission to end the Peloponnesian War. Lysistrata convinces the women of Greece to <strong>withhold sexual privileges from their husbands</strong> as a means of forcing the men to negotiate a peace.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <CompactCharacterSection characters={[
+                                    {name: "Lysistrata", sub: "Protagonist", role: "Leader of the Athenian wives. Her name means 'Disbander of Armies'. Driven, insightful, charismatic. She is a cool-headed strategist who resembles the goddess Athena in her vision for a united Greece.", type: 'protagonist'},
+                                    {name: "Myrrhine", sub: "The Coy Wife", role: "A young, coy, and playful woman. She is famous for the scene where she tortures her husband Cinesias by promising sex and then denying it. She represents the use of 'the body' as a political tool."},
+                                    {name: "Lampito", sub: "Spartan Ally", role: "A strong, beautiful Spartan woman. She is Lysistrata's steadfast counterpart from the enemy side, showing that women across Greece are united."},
+                                    {name: "Calonice", sub: "Neighbor", role: "A mature, lusty woman of Athens (sometimes referred to as Calonike). She is a neighbor to Lysistrata."},
+                                    {name: "The Magistrate", sub: "Antagonist", role: "A blustering, war-mongering authority figure. He represents the misogynistic establishment. He is defeated by Lysistrata's logic when she argues that managing a state is like managing a household."},
+                                    {name: "Cinesias", sub: "The Husband", role: "An Athenian citizen, Myrrhine's husband. A chauvinistic and desperate man. He arrives at the Acropolis begging for his wife. He represents the suffering of men under the sex strike."},
+                                    {name: "Spartan Herald", sub: "Messenger", role: "Arrives concealing an erection, proving that the strike is working in Sparta as well."}
+                                ]} />
+
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                        <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
+                                    </h3>
+                                    
+                                    <div className="space-y-2">
+                                        <PlotBlock title="Scene 1: The Great Plan" index={1}>
+                                            <p>An Athenian woman named Lysistrata asks women from all over Greece (including enemies like Sparta) to meet her in the marketplace below the Acropolis. She proposes a bold, two-part plan to end the war:</p>
+                                            <ul className="list-disc pl-5 mt-2 space-y-1">
+                                                <li><strong>Part 1 (The Body):</strong> The younger women must vow to withhold all sexual privileges from their husbands until the men negotiate peace.</li>
+                                                <li><strong>Part 2 (The Money):</strong> A band of older women has already been sent to seize the Acropolis, which holds the treasury. Without money, the politicians cannot wage war.</li>
+                                            </ul>
+                                            <p className="mt-2">After some reluctance, the women agree. Lampito is sent back to Sparta to organize the strike there, while Lysistrata and the others barricade themselves in the Acropolis.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 2: Fire vs. Water" index={2}>
+                                            <p>The Chorus of Old Men arrives carrying wood and burning coals. Their plan is to smoke the women out of the sacred temple. This represents the male reliance on force and fire.</p>
+                                            <p className="mt-2">However, they are foiled by the arrival of the Chorus of Old Women, who carry pitchers of water. The women douse the old men and their fires, leaving the men cold, wet, and humiliated. This establishes the dominance of the women early in the conflict.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 3: The Debate" index={3}>
+                                            <p>A Magistrate arrives with armed guards to break into the treasury. The women chase the guards away, leaving Lysistrata to debate the Magistrate alone. He argues that war is men's business.</p>
+                                            <p className="mt-2">Lysistrata counters with a famous argument: <strong>Household management is the same as State management.</strong> She explains that women are the true victims of war because they lose their husbands and sons, and young women grow old waiting for men to return. The Magistrate is humiliated and sent away.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 4: Weakness & The Oracle" index={4}>
+                                            <p>After a few days, the women's resolve begins to break. They miss their husbands and try to sneak out using silly excuses. Lysistrata realizes she is losing control.</p>
+                                            <p className="mt-2">To restore order, she produces an <strong>Oracle</strong>—a prophecy from the past—which claims that the women will triumph if they stay united. This appeals to their superstition and keeps them in the temple.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 5: Myrrhine & Cinesias" index={5}>
+                                            <p>This is the most famous comic scene. Myrrhine's husband, Cinesias, arrives in visible pain from sexual frustration. He begs her to come home.</p>
+                                            <p className="mt-2">Myrrhine plays along. She agrees to have sex but keeps finding delays: she needs a mattress, then a pillow, then perfume. She works him into a frenzy and then abruptly runs back into the Acropolis, leaving him unsatisfied. This proves the power of the strike.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 6: Resolution & Peace" index={6}>
+                                            <p>A Spartan herald arrives, trying to hide his own erection. It becomes clear that all the men of Greece are suffering. They agree to negotiate.</p>
+                                            <p className="mt-2">Lysistrata acts as the diplomat. She summons the goddess <strong>Reconciliation</strong> (often portrayed as a naked woman). Lysistrata scolds the ambassadors for fighting their brothers instead of their common enemies (barbarians). The men, distracted by Reconciliation's beauty, agree to all terms. The play ends with a great feast and the Spartans singing a song praising Athena.</p>
+                                        </PlotBlock>
+                                    </div>
+                                </div>
+
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-2xl mb-6 text-center text-[#2c3e50]">Analysis: The Battle of the Choruses</h3>
+                                    <ChorusDebate 
+                                        leftTitle="Chorus of Old Men"
+                                        leftContent="Composed of weak, shaky, doddering old men. They are comically inept and impotent. They represent the pro-war stance and masculinity. They carry fire (torches), a symbol of male power and destruction."
+                                        rightTitle="Chorus of Old Women"
+                                        rightContent="Feistier than the men. They represent the women Lysistrata sent to seize the Acropolis. Since they are older, they are not part of the sex strike. They carry water, symbolizing life and the power to extinguish male aggression."
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 3: THE BIRDS (COMPLETE) */}
+                        {activeTab === 'birds' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <ClassicalHeader title="The Birds" subtitle="414 BCE | Cloud Cuckoo Land" icon={Feather} />
+
+                                {/* Intro */}
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
+                                    <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">Historical Context</h3>
+                                    <p className="text-stone-700 leading-relaxed serif-text mb-4">
+                                        Premiered in 414 BCE during the Peloponnesian War. Roughly a year earlier, Athens had launched the massive <strong>Sicilian Expedition</strong> with hopes of conquering Syracuse.
+                                    </p>
+                                    <p className="text-stone-700 leading-relaxed serif-text">
+                                        <strong>Cloud Cuckoo Land</strong> is a symbol of ridiculously misplaced optimism—verging on delusional lunacy. It mirrors the rumors and wild expectations of the Athenians regarding the invasion. A year after the play, the invasion failed, and every Athenian soldier was killed or enslaved.
+                                    </p>
+                                </div>
+
+                                {/* Cast List */}
+                                <CompactCharacterSection characters={[
+                                    {name: "Pisthetaerus", sub: "Protagonist", role: "A middle-aged Athenian who leaves Athens to escape taxes and laws. He is clever and persuasive. He creates the plan to build the Bird City and ultimately usurps Zeus.", type: 'protagonist'},
+                                    {name: "Euelpides", sub: "Sidekick", role: "Pisthetaerus's friend and traveling companion. He provides comic relief but fades from the plot later. He is also tired of Athenian life."},
+                                    {name: "Epops (The Hoopoe)", sub: "Bridge", role: "Formerly the human King Tereus who transformed into a bird. He acts as the bridge/translator between the humans and the bird kingdom."},
+                                    {name: "Prometheus", sub: "Titan Ally", role: "The Titan god of fire and enemy of Zeus. He sneaks into the city under an umbrella to advise Pisthetaerus on how to defeat the gods."},
+                                    {name: "Heracles", sub: "Antagonist", role: "The bastard son of Zeus. Portrayed as a gluttonous fool who is easily tricked by Pisthetaerus."},
+                                    {name: "Poseidon", sub: "Antagonist", role: "God of the sea. One of the ambassadors sent by Zeus to negotiate."},
+                                    {name: "Triballus", sub: "Barbarian God", role: "A barbarian god who speaks gibberish."},
+                                    {name: "Basileia", sub: "Sovereignty", role: "Zeus's maid/princess who represents Sovereignty. Pisthetaerus demands her hand in marriage."},
+                                    {name: "Iris", sub: "Messenger", role: "Goddess of the rainbow. Caught spying in the bird city and is insulted by Pisthetaerus."},
+                                    {name: "The Chorus Leader", sub: "Birds", role: "Speaks for the flock. Initially hostile and wants to kill the men, but is later convinced by Pisthetaerus's plan."},
+                                    {name: "Parricide", sub: "Visitor", role: "A man who wants to join the city so he can legally beat his father (since roosters do it)."},
+                                    {name: "Trochilus", sub: "Slave", role: "A loud and annoying wren. The servant to Epops."},
+                                    {name: "Phoenicopterus", sub: "Bird", role: "A pink flamingo who joins the council of birds."},
+                                    {name: "The Priest", sub: "Religious", role: "Makes sacrifices to the birds after the city is established."}
+                                ]} />
+
+                                {/* Literary Specs Table */}
+                                <div className="mb-12">
+                                    <h3 className="font-serif font-bold text-2xl text-[#2c3e50] mb-4">Literary Elements</h3>
+                                    <SpecTable items={[
+                                        {label: "Genre", value: "Comedy"},
+                                        {label: "Language", value: "Greek"},
+                                        {label: "Setting", value: "A Hillside Wilderness outside of Athens, 414 BC"},
+                                        {label: "Point of View", value: "Pisthetaerus"},
+                                        {label: "Tone", value: "Comedic, Satirical"},
+                                        {label: "Major Conflict", value: "Pisthetaerus seeks a new place to live away from Athenian politics and laws."},
+                                        {label: "Climax", value: "Pisthetaerus negotiates with the gods, gets the scepter and Basileia, and weds her."},
+                                        {label: "Foreshadowing", value: "Tereus appearing as a bird foreshadows the men turning into birds."},
+                                        {label: "Allusions", value: "Alludes to the need to escape legalism and find a higher way of living."},
+                                        {label: "Paradox", value: "Zeus's greatest power is Basileia and his scepter; paradoxically, he allows others to give them away."},
+                                        {label: "Parallelism", value: "The arrival of the gods parallels the earlier arrival of the nuisance visitors from Athens."}
+                                    ]} />
+                                </div>
+
+                                {/* Plot */}
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                        <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
+                                    </h3>
+                                    <div className="space-y-2">
+                                        <PlotBlock title="Scene 1: Leaving Athens" index={1}>
+                                            <p>The play begins in a desolate wilderness. Pisthetaerus and Euelpides are wandering, guided by a crow and a jackdaw. They have left Athens voluntarily to escape the constant lawsuits, taxes, and political corruption. They are looking for Tereus (Epops), the man who turned into a Hoopoe bird, hoping he knows of a quiet place to live.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 2: The Great Idea" index={2}>
+                                            <p>They meet Trochilus and then Epops. Epops suggests various towns, but the men reject them (one is too aristocratic, another too boring). Suddenly, Pisthetaerus has a revelation: <strong>Use the Sky.</strong></p>
+                                            <p className="mt-2">He realizes that if birds build a fortified city in the sky (the space between Earth and Olympus), they can control the universe. They can block the sacrificial smoke rising from humans to gods, effectively starving the gods into submission.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 3: Convincing the Chorus" index={3}>
+                                            <p>Epops calls the birds. When the Chorus arrives, they are furious to see men (their natural enemies) and want to tear them to shreds. Epops calms them down.</p>
+                                            <p className="mt-2">Pisthetaerus delivers a masterful speech. He uses fake history and genealogy to convince the birds that they are older than the Titans and the Earth itself, and that they are the rightful rulers of the universe. He promises that if they rule, he will rid mankind of pests (locusts) but if man disobeys, the birds will eat their seeds and pluck out their eyes.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 4: Cloud Cuckoo Land" index={4}>
+                                            <p>The birds agree. The men eat a special root that gives them wings (though they only partially transform). They name the new city <strong>Cloud Cuckoo Land</strong>.</p>
+                                            <p className="mt-2">Pisthetaerus tries to perform a religious sacrifice to the new bird gods, but he is interrupted by a stream of unwanted visitors from Athens (a poet, a prophet, a town planner, an inspector). They all want to exploit the new city for money or laws. Pisthetaerus beats them and drives them away, showing that corruption follows man everywhere.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 5: The Blockade" index={5}>
+                                            <p>The city is built. A messenger reports that the goddess <strong>Iris</strong> has flown through their walls. Pisthetaerus detains her, insults her, and sends her back to Zeus with a warning.</p>
+                                            <p className="mt-2">Another visitor arrives: a <strong>Parricide</strong> (father-beater). He wants to join because he heard roosters beat their fathers. Pisthetaerus tells him that while roosters do that, stork children must care for their parents. He gives the man wings and sends him off to war to get rid of him.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 6: Prometheus & The Negotiation" index={6}>
+                                            <p><strong>Prometheus</strong> sneaks in, hiding under a parasol so Zeus won't see him. He reveals a secret: The gods are starving because no smoke is coming through. He advises Pisthetaerus not to accept any treaty unless Zeus gives up his Scepter and <strong>Basileia</strong> (The Princess of Sovereignty).</p>
+                                            <p className="mt-2">The ambassadors arrive: Poseidon (dignified), Heracles (hungry), and Triballus (barbarian). Pisthetaerus ignores them, cooking a delicious meal. Heracles smells the food and wants to deal.</p>
+                                            <p className="mt-2">Pisthetaerus demands the scepter. Poseidon refuses. Pisthetaerus then tricks Heracles by telling him that as a bastard son, he won't inherit Zeus's property anyway, so he might as well help the birds. Heracles and Triballus outvote Poseidon. The deal is struck.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 7: Victory" index={7}>
+                                            <p>Pisthetaerus receives the lightning bolt (scepter) and Basileia. He is hailed as the new supreme ruler of the cosmos. The play ends with a wedding celebration, where Pisthetaerus effectively replaces Zeus.</p>
+                                        </PlotBlock>
+                                    </div>
+                                </div>
+
+                                <AnalysisSection title="Themes & Analysis" items={[
+                                    {term: "Power", def: "The play shows how easily power structures are created through myth and rhetoric. Pisthetaerus invents a fake history to manipulate the birds, suggesting religion is a tool for control."},
+                                    {term: "New Gods", def: "Man manipulates the new gods (birds) for wealth. It reveals that man will follow whatever god suits their desire for wealth and leniency."},
+                                    {term: "Morality", def: "Pisthetaerus leaves laws behind but sets up a system where desires are met. Worshiping birds implies man follows gods that allow bad behavior rather than transforming into right living."},
+                                    {term: "Satire", def: "Satirizes the Athenian desire for empire (Sicilian Expedition) and the gullibility of the masses."}
+                                ]} />
+
+                                <AnalysisSection title="Symbols & Motifs" icon={Star} items={[
+                                    {term: "Wings", def: "Symbolize the desire to transcend human limitations (laws, taxes). However, the men only partially transform, symbolizing they can never fully escape their human nature."},
+                                    {term: "Basileia (Princess)", def: "Represents Zeus's sovereignty and ultimate power. By marrying her, Pisthetaerus steals the ultimate authority. A metaphor that Love is the greatest ruling power."},
+                                    {term: "Scepter", def: "Zeus's lightning bolt. A symbol of the ability to bring fear to people and make them bow."},
+                                    {term: "Unwelcome Visitors", def: "A motif (Messengers, Men seeking wings, Gods). They show that corruption and external pressure follow the protagonist even to the sky."},
+                                    {term: "Birds", def: "Symbolize the quest to fly above the arguing over laws in Athens. A search for a higher way of life."}
+                                ]} />
+
+                                <AnalysisSection title="Metaphors & Irony" icon={Lightbulb} items={[
+                                    {term: "Story of the Gods (Metaphor)", def: "Using Aesop's tales to claim birds are older than gods is a metaphor for how people use mythology to create authority on earth."},
+                                    {term: "Feed in Gardens (Metaphor)", def: "Represents sexual appetites and unrestrained living."},
+                                    {term: "Half-Transformed (Metaphor)", def: "Men only get wings and crowns. They cannot fully leave themselves behind. They are capable of only so much metamorphosis."},
+                                    {term: "Irony: Negotiation", def: "Three powerful gods (Poseidon, Heracles) could crush Pisthetaerus, but they surrender simply because they are hungry."},
+                                    {term: "Irony: Bird City", def: "The birds build the city in moments, shocking Pisthetaerus with their industriousness."},
+                                    {term: "Irony: Directions", def: "The guides (crow/jackdaw) lead them into a rocky wilderness. They realize they must look 'up', not 'out'."}
+                                ]} />
+
+                                {/* Quotations */}
+                                <div className="mb-14 border-t border-stone-300 pt-12">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 text-[#2c3e50]">
+                                        <Quote className="text-[#b48e43]"/> Essential Quotations Bank
+                                    </h3>
+                                    
+                                    <DetailedQuoteCard 
+                                        text="He's the sharpest of foxes, all ingenuity, a dead-shot, an old hand, the sieved meal of subtlety."
+                                        speaker="Epops (Tereus)"
+                                        listener="The Chorus Leader"
+                                        analysis="Tereus defends Pisthetaerus when the Chorus questions his sanity. By praising him instead, Tereus establishes Pisthetaerus as a clever strategist. This convinces the audience that his ideas are valuable and foreshadows his rise to absolute power."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="How could these men ever give us any valuable instruction or advice? They are the enemies of our feathers and our forefathers!"
+                                        speaker="The Chorus Leader"
+                                        listener="Tereus (Epops)"
+                                        analysis="Birds and men are natural enemies because men hunt birds. This quote emphasizes their initial distrust. This skepticism makes their later agreement with Pisthetaerus seem even more dramatic, highlighting how easily a crowd can be manipulated by words."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="That's right. By words a man is uplifted and his mind is made to soar aloft. And in the same way I want to give wings to your mind by my good advice, and make you turn to a lawful occupation."
+                                        speaker="Pisthetaerus"
+                                        listener="The Informer"
+                                        analysis="Pisthetaerus uses a pun on the word 'wings.' The Informer wants physical wings, but Pisthetaerus argues that 'wings' represent thoughts and ideas. This shows his skill with words and how he uses rhetoric to control others."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="That's no doubt because he was once a man."
+                                        speaker="Pisthetaerus"
+                                        listener="Euelpides (General Comment)"
+                                        analysis="Pisthetaerus realizes that since Epops was once human, there is a connection he can exploit. This realization is the spark for his entire plan. Knowing the bird-king has a human mind gives him the entry point he needs."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="By Heracles! What a creature! What plumage! What means this triple crest?"
+                                        speaker="Pisthetaerus"
+                                        listener="Epops"
+                                        analysis="Pisthetaerus uses excessive praise to calm Epops down. He distracts Epops from the intrusion by complimenting his feathers. Aristophanes is making fun of how easily people are controlled by flattery and ego."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="Thus you have all human knowledge as well as that of birds."
+                                        speaker="Euelpides"
+                                        listener="Epops"
+                                        analysis="Euelpides flatters Epops by saying he has the best of both worlds: human wisdom and bird instincts. This reveals their hope to find a perfect utopia. Satirically, it suggests that such a perfect place doesn't actually exist."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="Not at all! I hold the son of Scellias in horror."
+                                        speaker="Euelpides"
+                                        listener="Epops"
+                                        analysis="Euelpides rejects the idea of an aristocracy (rule by the elite). He makes a pun on a politician's name to say he hates dictatorships. This is ironic because, in the end, they build a city where Pisthetaerus becomes a dictator."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="I am beginning to see a great plan, which will transfer the supreme power to the birds, if you will but take my advice."
+                                        speaker="Pisthetaerus"
+                                        listener="Epops/The Birds"
+                                        analysis="This is the turning point. Pisthetaerus realizes that the birds' location in the sky gives them strategic power over gods and men. His motivation shifts here from finding a quiet home to seizing control for himself."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="Of all that exists, firstly of me and of this man, even of Zeus himself. Your race is older than Saturn, the Titans and the Earth."
+                                        speaker="Pisthetaerus"
+                                        listener="The Birds"
+                                        analysis="Pisthetaerus invents a fake history, claiming birds are older than gods. Aristophanes is showing that people will believe any lie if it flatters them or promises them power. The birds accept this myth because it makes them feel superior."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="Then a cloud of sparrows greedy for corn must descend upon their fields and eat up all their seeds; we shall see then if Demeter will mete them out any wheat."
+                                        speaker="Pisthetaerus"
+                                        listener="The Birds"
+                                        analysis="Pisthetaerus plans to starve the gods by blocking their smoke and starve humans by eating their crops. This shows his shift to tyranny. He uses fear and force to ensure his new authority is respected by everyone."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="We ourselves asked for this transformation, and, as Aeschylus has it, 'These are no borrowed feathers, but truly our own.'"
+                                        speaker="Pisthetaerus"
+                                        listener="The Birds"
+                                        analysis="He quotes a famous poet to sound authoritative while reassuring the birds. This demonstrates his manipulative skill; he uses culture and literature to make his lies sound like ancient truths."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="The messenger of Zeus to mankind, I am going to tell them to sacrifice sheep and oxen on the altars and to fill their streets with the rich smoke of burning fat."
+                                        speaker="Iris"
+                                        listener="Pisthetaerus"
+                                        analysis="Iris confirms the blockade is working: the gods are starving. This proof gives Pisthetaerus the confidence to refuse compromise. He knows he has won and can now demand total surrender from Zeus."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="This town will soon be inhabited by a crowd of men. Fortune favours us alone and thus they have fallen in love with our city."
+                                        speaker="The Chorus Leader"
+                                        listener="The Audience/Birds"
+                                        analysis="The birds worry about the humans rushing to join their city. This reflects the theme of 'fads.' Aristophanes notes that people will blindly flock to whatever is new and popular, abandoning their old ways for the latest trend."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="And therefore I want to dwell here, for I want to strangle my father and inherit his wealth."
+                                        speaker="Parricide"
+                                        listener="Pisthetaerus"
+                                        analysis="A man wants to join the city just so he can legally beat his father. This is dark satire. Aristophanes argues that people often seek new religions or societies not for morality, but to justify their own bad behavior and greed."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="But, if you want me to tell you how things are going in heaven, take this umbrella and shield me."
+                                        speaker="Prometheus"
+                                        listener="Pisthetaerus"
+                                        analysis="Prometheus betrays Zeus to help Pisthetaerus. He reveals the gods are weak. This secret intelligence is the key that allows Pisthetaerus to demand the ultimate prize: the throne itself."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="And I get nothing whatever of the paternal property?"
+                                        speaker="Heracles"
+                                        listener="Pisthetaerus"
+                                        analysis="Heracles agrees to the deal only when he learns he won't inherit Zeus's money anyway. This satirizes greed. It shows that even gods care more about money and property than they care about loyalty or family."
+                                    />
+                                </div>
+
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-2xl mb-6 flex items-center gap-2">
+                                        <Book className="text-[#b48e43]"/> Glossary
+                                    </h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <GlossaryTerm word="Lurk" def="Be hidden, waiting in ambush." />
+                                        <GlossaryTerm word="Advance" def="To approach." />
+                                        <GlossaryTerm word="Trod" def="To walk along." />
+                                        <GlossaryTerm word="Wise" def="Intelligent." />
+                                        <GlossaryTerm word="Parricide" def="The killing of a parent." />
+                                        <GlossaryTerm word="Calamitous" def="Disastrous." />
+                                        <GlossaryTerm word="Protracted" def="Lasting for a long time." />
+                                        <GlossaryTerm word="Feeble" def="Weak." />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 4: THE FROGS */}
+                        {activeTab === 'frogs' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <ClassicalHeader title="The Frogs" subtitle="405 BCE | Aristophanes" icon={Landmark} />
+
+                                {/* Intro */}
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
+                                    <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">Overview</h3>
+                                    <p className="text-stone-700 leading-relaxed serif-text mb-4">
+                                        A comedic play where Dionysus, the god of wine and theater, travels to Hades (the Underworld) to bring back a great poet to save Athens from its political and artistic decline.
+                                    </p>
+                                    <p className="text-stone-700 leading-relaxed serif-text">
+                                        It culminates in a poetry contest between Euripides (modern/clever) and Aeschylus (traditional/wise), where Dionysus must choose who to resurrect to guide the city.
+                                    </p>
+                                </div>
+
+                                {/* Cast List */}
+                                <CompactCharacterSection characters={[
+                                    {name: "Dionysus", sub: "Protagonist", role: "The god of wine, theater, and fertility. He initiates the journey to Hades. He is depicted as cowardly and crass but evolves into a wise judge.", type: 'protagonist'},
+                                    {name: "Xanthias", sub: "Slave", role: "Dionysus's wise-cracking slave. He is smarter and braver than his master, often providing comic relief and social commentary on slavery.", type: 'protagonist'},
+                                    {name: "Aeschylus", sub: "Tragic Poet", role: "The renowned traditional playwright. He represents old morality, wisdom, and dignified verse. He ultimately wins the contest.", type: 'neutral'},
+                                    {name: "Euripides", sub: "Tragic Poet", role: "The modern playwright. He represents cleverness, realism, and intellectualism. Dionysus originally intends to save him but changes his mind.", type: 'neutral'},
+                                    {name: "Heracles", sub: "God", role: "The famous hero and brother of Dionysus. He gives advice on how to get to Hades (since he went there to capture Cerberus).", type: 'neutral'},
+                                    {name: "Charon", sub: "Ferryman", role: "Ferries Dionysus across the lake to Hades.", type: 'neutral'},
+                                    {name: "Aeacus", sub: "Doorman", role: "The judge/doorman of Hades. He hates Heracles and mistakenly tortures Dionysus thinking he is Heracles.", type: 'antagonist'},
+                                    {name: "Pluto", sub: "God", role: "Ruler of the Underworld. He hosts the contest.", type: 'neutral'},
+                                    {name: "The Chorus", sub: "Dual Role", role: "Acts as the singing Frogs (brekekekex koax koax) and later as the Initiates of the Eleusinian Mysteries.", type: 'neutral'},
+                                    {name: "Corpse", sub: "Minor", role: "Refuses Dionysus's paltry pay to carry bags in the Underworld.", type: 'neutral'},
+                                    {name: "Pandokeutria", sub: "Innkeeper", role: "Female innkeeper who chastises 'Heracles' for unpaid bills.", type: 'neutral'},
+                                    {name: "Plathane", sub: "Innkeeper", role: "Another innkeeper angry at Heracles.", type: 'neutral'},
+                                    {name: "Servant 1", sub: "Maid", role: "Maid of Persephone who invites 'Heracles' to a feast.", type: 'neutral'},
+                                    {name: "Servant 2", sub: "Slave", role: "Slave of Pluto who gossips with Xanthias.", type: 'neutral'}
+                                ]} />
+
+                                {/* Plot */}
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                        <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
+                                    </h3>
+                                    <div className="space-y-2">
+                                        <PlotBlock title="Scene 1: The Quest Begins" index={1}>
+                                            <p>Dionysus, dressed as Heracles (lion skin + club), and his slave Xanthias (riding a donkey) visit Heracles. Dionysus explains he needs a talented poet to save Athens because the living ones are "bad". He asks Heracles for directions to the Underworld.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 2: The Crossing & The Frogs" index={2}>
+                                            <p>Dionysus must row across the lake with Charon. Xanthias has to walk around because slaves aren't allowed on the boat. While rowing, a Chorus of Frogs annoys Dionysus with their song ("Brekekekex koax koax"). Dionysus eventually joins in, beating them at their own game.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 3: Arrival & Monsters" index={3}>
+                                            <p>They reunite on the other side. They encounter a shape-shifting monster called Empusa. Dionysus is terrified and soils his clothes, showing his cowardice. They then meet the Chorus of Initiates (worshippers of the Mysteries) singing hymns.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 4: Mistaken Identities" index={4}>
+                                            <p>They knock on Pluto's door. Aeacus (the doorman) thinks Dionysus is Heracles (who stole Cerberus) and threatens him. Terrified, Dionysus makes Xanthias trade clothes with him.</p>
+                                            <p className="mt-2">However, a maid arrives inviting "Heracles" to a feast with dancing girls. Dionysus immediately demands the costume back. Then, angry innkeepers attack "Heracles" for unpaid bills. Dionysus forces Xanthias to wear the costume again. Aeacus returns to torture "Heracles" to prove his divinity. Both get whipped, but neither cries out (hiding their pain).</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 5: The Contest Setup" index={5}>
+                                            <p>They enter the palace. We learn of a rivalry: Euripides is challenging Aeschylus for the "Chair of Tragedy". Pluto announces a contest to settle it, with Dionysus as the judge.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 6: The Poetic Duel" index={6}>
+                                            <p>The poets attack each other. Euripides claims his work is realistic, democratic, and clear. Aeschylus claims his work is dignified, moral, and teaches citizens to be brave. They critique each other's prologues and lyrics.</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 7: The Weighing" index={7}>
+                                            <p>Dionysus uses a scale to weigh their verses. Aeschylus wins every time because his lines reference "heavy" things (rivers, death, chariots), while Euripides uses "light" words (persuasion, wings).</p>
+                                        </PlotBlock>
+
+                                        <PlotBlock title="Scene 8: The Verdict" index={8}>
+                                            <p>Dionysus asks them for advice on saving Athens (specifically regarding Alcibiades). Although he came for Euripides, Dionysus decides that Aeschylus gives better advice. He chooses <strong>Aeschylus</strong> to return to the living. The play ends with a procession honoring the old poet.</p>
+                                        </PlotBlock>
+                                    </div>
+                                </div>
+
+                                <AnalysisSection title="Themes & Context" items={[
+                                    {term: "Value of Poetry", def: "Poetry is not just entertainment; it instructs citizens. Aeschylus wins because his poetry teaches morality and bravery, which Athens needs."},
+                                    {term: "Decline of Athens", def: "Written during the Peloponnesian War. Aristophanes criticizes bad leaders, corruption, and the loss of traditional values."},
+                                    {term: "Identity", def: "The costume switching explores who is truly noble. The slave (Xanthias) often acts more bravely than the god (Dionysus)."},
+                                    {term: "Dionysus' Evolution", def: "He starts as a cowardly buffoon but matures into a wise judge who puts the city's needs above his personal preference for Euripides."},
+                                    {term: "Ambition", def: "Both slaves (seeking dominance) and poets (seeking the Chair of Tragedy) display ambition. The clash of literary ambitions results in a clear message for Athens."},
+                                    {term: "Tradition & Morality", def: "The play espouses that while Euripides is clever, he is not sufficient for stability. Tradition and morality (Aeschylus) are virtues in times of unrest."},
+                                    {term: "Value of Comedy", def: "Aristophanes proves comedy can be a vehicle for truth and moral messages, not just lighthearted entertainment."}
+                                ]} />
+
+                                <AnalysisSection title="The Eleusinian Mysteries" icon={Sparkles} items={[
+                                    {term: "Origin", def: "Based on the myth of Demeter searching for Persephone. It themes revolve around life after death."},
+                                    {term: "Ritual", def: "Initiates marched from Athens to Eleusis. They performed secret rites in the Telesterion. It was open to men, women, and slaves."}
+                                ]} />
+
+                                <div className="mb-14 border-t border-stone-300 pt-12">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 text-[#2c3e50]">
+                                        <Quote className="text-[#b48e43]"/> Essential Quotations Bank
+                                    </h3>
+
+                                    <DetailedQuoteCard 
+                                        text="I need a talented poet, for some are gone, and those that live are bad."
+                                        speaker="Dionysus"
+                                        listener="Heracles"
+                                        analysis="Dionysus states his goal clearly. This summarizes the play's theme: Athens is failing because it lacks a wise poet to guide it. He rejects living poets as talentless, believing only the dead masters can save the city."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="An ancient mariner will ferry you across in a skiff no bigger than this, for a fare of two obols."
+                                        speaker="Heracles"
+                                        listener="Dionysus"
+                                        analysis="Heracles describes the journey to the Underworld. The specific mention of 'two obols' connects the myth to real Athenian life (the price of a theater ticket), grounding the fantasy in reality."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="Exalted Iacchus, inventor of most enjoyable festive song, come and march along with us to the goddess..."
+                                        speaker="Chorus of Initiates"
+                                        listener="Dionysus (Iacchus)"
+                                        analysis="The Chorus worships Dionysus under his mystical name, Iacchus. This connects the comedy to the sacred Eleusinian Mysteries, reminding the audience of the spiritual and religious side of the festival."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="You're the very worst coward on heaven and earth!"
+                                        speaker="Xanthias"
+                                        listener="Dionysus"
+                                        analysis="Xanthias mocks Dionysus for being afraid of the monster. This highlights the role reversal: the slave is brave while the god is scared. It humanizes the god and provides comedy through his lack of dignity."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="And I make you a gentlemanly offer: take my slave here and torture him, and if you catch me in any wrongdoing, then take me and put me to death."
+                                        speaker="Xanthias (as Heracles)"
+                                        listener="Aeacus"
+                                        analysis="Xanthias satirizes Athenian law, which allowed slaves to be tortured for evidence. By offering his 'master' (Dionysus) for torture, he flips the social hierarchy upside down for comedic effect."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="First, we think that all the citizens should be made equal, and their fears removed... Next I say that no one in the city should be disenfranchised."
+                                        speaker="Chorus Leader"
+                                        listener="The Audience (Parabasis)"
+                                        analysis="In this direct address to the audience, the Chorus speaks for the playwright. They beg for unity and forgiveness in Athens. It is a serious political plea hidden inside the comedy, asking citizens to stop fighting each other."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="Why, it's like nirvana whenever I curse my master behind his back!"
+                                        speaker="Slave of Pluto"
+                                        listener="Xanthias"
+                                        analysis="The slaves bond over badmouthing their masters. This shows the reality of the social order: slaves find small ways to rebel and reclaim their dignity by mocking the people who own them."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="But the poet has a special duty to conceal what's wicked, not to stage it or teach it."
+                                        speaker="Aeschylus"
+                                        listener="Euripides"
+                                        analysis="Aeschylus argues that art must be moral. He believes a poet should hide evil, not show it. His view is that literature should model good behavior to teach citizens how to be better people."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="I've had enough too; what I'd like to do is take him to the scales, which is the only true test of our poetry; the weight of our utterances will be the decisive proof."
+                                        speaker="Aeschylus"
+                                        listener="Dionysus"
+                                        analysis="The climax of the contest. Aeschylus wins because his words are physically 'heavier' (about death and war). Aristophanes uses this literal weighing to show that Athens needs serious, weighty advice, not light entertainment."
+                                    />
+
+                                    <DetailedQuoteCard 
+                                        text="It was my tongue that swore: I'm choosing Aeschylus."
+                                        speaker="Dionysus"
+                                        listener="Euripides"
+                                        analysis="Dionysus rejects Euripides by using Euripides's own line against him. He chooses Aeschylus because he has matured. He realizes Athens needs the wisdom and tradition of the old poet, not the clever tricks of the new one."
+                                    />
+                                </div>
+
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-2xl mb-6 flex items-center gap-2">
+                                        <Book className="text-[#b48e43]"/> Glossary
+                                    </h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <GlossaryTerm word="Blarney" def="Nonsense-talk." />
+                                        <GlossaryTerm word="Pungent" def="Having a strong impression due to being clever." />
+                                        <GlossaryTerm word="Scion" def="Descendent, heir." />
+                                        <GlossaryTerm word="Brandishing" def="Wielding." />
+                                        <GlossaryTerm word="Burgeoning" def="Growing quickly." />
+                                        <GlossaryTerm word="Clamored" def="Loudly called for." />
+                                        <GlossaryTerm word="Croquettes" def="Minced meat/vegetable, deep-fried." />
+                                        <GlossaryTerm word="Depilated" def="Removed hair from." />
+                                        <GlossaryTerm word="Dillydallying" def="Procrastinating." />
+                                        <GlossaryTerm word="Euphonious" def="Pleasing to hear." />
+                                        <GlossaryTerm word="Factionalism" def="Small groups seeking own interests." />
+                                        <GlossaryTerm word="Foments" def="Causing something bad to happen." />
+                                        <GlossaryTerm word="Forsworn" def="Guilty of perjury." />
+                                        <GlossaryTerm word="Gullets" def="Throats." />
+                                        <GlossaryTerm word="Hemlock" def="A poison derived from a plant." />
+                                        <GlossaryTerm word="Hirsute" def="Hairy." />
+                                        <GlossaryTerm word="Lacerate" def="Cut; shred." />
+                                        <GlossaryTerm word="Minestrone" def="Italian vegetable soup." />
+                                        <GlossaryTerm word="Parse" def="To examine in a close, detailed way." />
+                                        <GlossaryTerm word="Unalloyed" def="Pure, unmixed." />
+                                        <GlossaryTerm word="Urbane" def="Polite, sophisticated." />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB: PROMETHEUS BOUND */}
+                        {activeTab === 'prometheus' && (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                                <ClassicalHeader title="Prometheus Bound" subtitle="Aeschylus | The Defiant Titan" icon={Flame} />
+
+                                {/* Intro */}
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
+                                    <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">In Brief</h3>
+                                    <p className="text-stone-700 leading-relaxed serif-text">
+                                        Prometheus Bound is an ancient Greek tragedy, traditionally by Aeschylus, about the Titan Prometheus chained to a rock by Zeus for giving fire and knowledge to humanity. The play shows his defiance against Zeus's tyranny, enduring torture while visited by sympathetic figures like the Oceanids and Io, and refusing to reveal a secret that could challenge Zeus's power, highlighting themes of power, justice, and human progress before being cast into the underworld.
+                                    </p>
+                                </div>
+
+                                {/* Cast List */}
+                                <CompactCharacterSection characters={[
+                                    {name: "Prometheus", sub: "Protagonist", role: "A Titan who took Zeus's side during the war but is now punished for stealing fire for humankind. He is bound to a rocky cliff.", type: 'protagonist'},
+                                    {name: "Zeus", sub: "Antagonist", role: "The new ruler of Olympus who overthrew Cronos. He is never seen on stage but his tyranny drives the plot.", type: 'antagonist'},
+                                    {name: "Chorus", sub: "Oceanids", role: "The daughters of Oceanus, a group of sea nymphs who represent the attitudes of the typical citizen/sympathy.", type: 'neutral'},
+                                    {name: "Hephaestus", sub: "God", role: "God of fire and forge. He is ordered to chain Prometheus but does so reluctantly, feeling sympathy for him.", type: 'neutral'},
+                                    {name: "Strength", sub: "Enforcer", role: "A thuggish male underling of Zeus. He echoes Zeus's belligerent attitude and jeers at Prometheus.", type: 'antagonist'},
+                                    {name: "Violence", sub: "Enforcer", role: "A female underling sent to effect the punishment. She speaks no lines.", type: 'antagonist'},
+                                    {name: "Oceanus", sub: "God", role: "God of the ocean. He expresses sympathy but urges Prometheus to restrain his speech and submit to Zeus.", type: 'neutral'},
+                                    {name: "Io", sub: "Victim", role: "A mortal woman loved by Zeus, transformed into a cow, and stung by a gadfly. Her suffering parallels Prometheus's.", type: 'neutral'},
+                                    {name: "Hermes", sub: "Messenger", role: "Zeus's messenger who arrives to demand Prometheus reveal the secret of who will overthrow Zeus.", type: 'antagonist'}
+                                ]} />
+
+                                {/* Plot */}
+                                <div className="mb-14">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                        <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
+                                    </h3>
+                                    <div className="space-y-2">
+                                        <PlotBlock title="Mythological Background" index={0}>
+                                            <p>Prometheus, whose name means 'Forethinker', was a Titan who defected to help Zeus defeat Cronos. He created man and taught them crafts. However, man lacked fire, which Zeus denied. Prometheus stole fire for man, leading to his punishment. This backstory sets the stage for the play.</p>
+                                        </PlotBlock>
+                                        <PlotBlock title="The Binding" index={1}>
+                                            <p>Strength (Might) and Violence restrain Prometheus. Strength heaps abuse on him while Hephaestus, the smith god, reluctantly chains Prometheus to the desolate mountain rock. Hephaestus pities his kin but must obey. They leave Prometheus alone, who laments his excessive and cruel punishment.</p>
+                                        </PlotBlock>
+                                        <PlotBlock title="The Chorus & Oceanus" index={2}>
+                                            <p>The Oceanids (Chorus) arrive to comfort Prometheus. Later, Oceanus enters on a winged beast. He offers to go to Olympus to plead Prometheus's case. Prometheus warns him that this will only bring Zeus's wrath upon him. Oceanus, valuing self-preservation, returns home.</p>
+                                        </PlotBlock>
+                                        <PlotBlock title="Io's Suffering" index={3}>
+                                            <p>Io, transformed into a cow and pursued by a gadfly due to Hera's jealousy over Zeus's lust, arrives. She begs for a prophecy. Prometheus reveals her future wanderings will be long and arduous, but eventually, she will find a home (Egypt) and bear a great family. From her line, a deliverer (Heracles) will eventually come to free Prometheus.</p>
+                                        </PlotBlock>
+                                        <PlotBlock title="The Secret & The End" index={4}>
+                                            <p>Prometheus reveals he holds a secret crucial to Zeus's survival: Zeus will make a marriage that leads to his downfall (a son stronger than the father). Hermes arrives, demanding this secret. Prometheus refuses to speak. The play ends with Zeus unleashing a cataclysm, casting Prometheus into the underworld with tortures of lightning and organ-devouring beasts.</p>
+                                        </PlotBlock>
+                                    </div>
+                                </div>
+
+                                <AnalysisSection title="Themes" items={[
+                                    {term: "Tyranny", def: "Zeus is portrayed as a classic tyrant: brutal, mistrustful, and stubborn. He rules by new laws he made up and relies on brute force (Strength/Violence). He oppresses both gods and humans."},
+                                    {term: "Knowledge vs. Brute Force", def: "Prometheus (Forethought) represents the power of knowledge, while Zeus relies on physical might. Prometheus knows that cunning, not force, determines the future. His secret knowledge gives him power over Zeus."},
+                                    {term: "Compassion for Humanity", def: "Prometheus is punished because he cared for 'wretched humans' whom Zeus wanted to annihilate. He gave them fire, arts, and science, elevating them from brutes to civilized beings."},
+                                    {term: "Suffering", def: "The play explores unjust suffering. Io and Prometheus are both victims of Zeus. It raises questions about the cost of standing up for what is right against supreme power."}
+                                ]} />
+                            </div>
+                        )}
+
+                        {/* TAB 5: QUESTION BANK */}
+                        {activeTab === 'qbank' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <ClassicalHeader title="Question Bank" subtitle="Essay Models & Critical Thinking" icon={FileQuestion} />
+                                
+                                {/* The Birds Questions */}
+                                <div className="space-y-8 mb-12">
+                                    <div className="bg-[#2c3e50] text-amber-50 px-6 py-4 rounded-lg flex items-center justify-between border-l-4 border-[#b48e43]">
+                                        <span className="font-serif font-bold text-xl">Category: The Birds</span>
+                                        <Feather className="text-[#b48e43]"/>
+                                    </div>
+
+                                    <QuestionBlock question="Q1: Who are the gods that are sent down to negotiate with Peisetaerus?">
+                                        <p>Poseidon, Heracles, and Triballians are sent to negotiate on behalf of Zeus, the father of the gods. Triballians is not a traditional god in Greek mythology, and here represents the god to the barbarians and speak incoherently. The three of them compose a comedic sequence that shows the gods willing to give up all of their power and rights without a fight.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q2: Why do Peisetaerus and Euelpides leave Athens?">
+                                        <p>At the beginning of the play Peisetaerus and Euelpides are seen wondering the rocky wilderness after having left Athens for good. The reason for their departure is that they are finished with the constant arguing of the men in the city over the law. Instead of enduring it another day, they have sought out Tereus, a man who has metamorphosed into a bird in order to show them where and how to live a life away from the Athenian culture.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q3: Why do the gods have to negotiate with Peisetaerus?">
+                                        <p>Peisetaerus has convinced the birds that they are the true gods of the earth that man should be worshiping by stating in Aesop's tales they came before the gods. This leads the birds to create a city in the sky which will intercept the sacrifices of man bound for the gods of Olympus, and thus cause them to starve and be willing to give up their powers as gods in order to have food.</p>
+                                    </QuestionBlock>
+                                </div>
+
+                                {/* The Frogs Questions */}
+                                <div className="space-y-8 mb-12">
+                                    <div className="bg-[#2c3e50] text-amber-50 px-6 py-4 rounded-lg flex items-center justify-between border-l-4 border-[#b48e43]">
+                                        <span className="font-serif font-bold text-xl">Category: The Frogs</span>
+                                        <Landmark className="text-[#b48e43]"/>
+                                    </div>
+
+                                    <QuestionBlock question="Q1: What is the structure of the play's plot?">
+                                        <p>The play has two major parts. The first is the archetypal heroic journey, in which Dionysus leaves the upper world and ventures down into Hades to retrieve a poet. He encounters obstacles and monsters. In the second part, Euripides and Aeschylus engage in a series of contests to determine the best poet. This is judged by Dionysus, who culminates his journey by growing wiser and making a choice for the good of Athens.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q2: What are the canonical messages and themes?">
+                                        <p>Aristophanes deals with the decline of Athens and the decline of tragedy. He argues that poetry is relevant and significant because it teaches the audience. He asserts that traditional values and morality (Aeschylus) are necessary to save the distressed city-state. He also explores identity, disguise, and ambition.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q3: How does Alcibiades influence the play?">
+                                        <p>Alcibiades was a polarizing military commander who had defected to Sparta and then returned. In the final contest, Dionysus asks the poets for their opinion on him. Euripides criticizes him, but Aeschylus acknowledges his brilliance ("lion cub"), suggesting that Athens must accommodate his nature if they want to use his skills. This reflects the political dilemma of the time.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q4: What is the Parabasis?">
+                                        <p>The parabasis is when the Chorus steps out of character to address the audience directly. In *The Frogs*, the Chorus Leader speaks about the political trials of Athens, pleading for amnesty for citizens and criticizing the city for choosing "bad leaders" over noble ones. It connects the comedy to the real-world crisis of Athens.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q5: What insights can be gained from Xanthias?">
+                                        <p>Xanthias is not an average slave; he is feisty and opinionated. He serves as Dionysus's able-bodied adjutant, provides insight into the master-servant dynamic, and offers comic relief by voicing the audience's thoughts about Dionysus's foolishness. He is indispensable in the first half of the play.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q6: How was the play staged?">
+                                        <p>Actors wore masks and costumes suited to their roles, often with exaggerated features like a big stomach or phallus for comedy. Men played all female roles. There were usually only three actors switching roles. The Chorus consisted of 24 men who sang and danced. The play ran without intermission for about two hours.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q7: What are the problems Athens faces?">
+                                        <p>Aristophanes highlights bad military commanders, debauched and wanton poetry, self-interested politicians (like Theramenes), and the disenfranchisement of citizens. He believes Athens elevates lesser citizens to power instead of supporting the worthy.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q8: Historical background to the staging?">
+                                        <p>Comedies were produced for festivals honoring Dionysus: the Greater Dionysia (March/April) and the Lenaea (January/February). These were competitions. The *choregus* (sponsor) paid for the chorus to display wealth. The poet acted as director and composer.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q9: Critiques of Euripides and Aeschylus?">
+                                        <p>Euripides claims Aeschylus is obscure, verbose, and repetitive. Aeschylus mocks Euripides' predictable prologues (the "oil bottle" joke) and claims his lyrics are wanton and suggestive. It highlights the clash between old dignity and new realism.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q10: Comedic Devices in Frogs?">
+                                        <p>It uses crass humor (scatology/sex), mistaken identity (costume switching), character flaws (Dionysus' cowardice), and intellectual parody (the literary contest).</p>
+                                    </QuestionBlock>
+                                </div>
+
+                                <div className="space-y-8 mb-12">
+                                    <div className="bg-[#2c3e50] text-amber-50 px-6 py-4 rounded-lg flex items-center justify-between border-l-4 border-[#b48e43]">
+                                        <span className="font-serif font-bold text-xl">Category: Critical Essays & History</span>
+                                        <Scroll className="text-[#b48e43]"/>
+                                    </div>
+
+                                    <QuestionBlock question="Q: Write notes on The Peloponnesian War.">
+                                        <p>The Peloponnesian War (431–404 BCE) was a momentous conflict between the two leading Greek city-states: Athens (leading the Delian League, a naval empire) and Sparta (leading the Peloponnesian League, a land power).
+                                        <br/><br/>
+                                        <strong>Origins:</strong> Tensions rose as Athens expanded its empire. Open war began in 431 BCE. Pericles, the Athenian leader, advised a strategy of relying on the navy and avoiding land battles, but a plague struck Athens, killing him and weakening morale.
+                                        <br/><br/>
+                                        <strong>Key Events:</strong>
+                                        <ul className="list-disc pl-5 my-2">
+                                            <li><strong>Peace of Nicias (421 BCE):</strong> An uneasy truce after years of stalemate and the deaths of leaders Cleon (Athens) and Brasidas (Sparta).</li>
+                                            <li><strong>Sicilian Expedition (415 BCE):</strong> Athens launched a massive assault on Sicily. It was a catastrophe; the fleet and army were destroyed, crippling Athens.</li>
+                                            <li><strong>Defeat:</strong> The war ended in 405 BCE when the Athenian navy was destroyed at Aegospotami. Athens capitulated the following year.</li>
+                                        </ul>
+                                        This war marks the eclipse of the Golden Age of Athens and provides the grim political backdrop for Aristophanes' plays like <em>The Birds</em> and <em>The Frogs</em>.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Discuss 'The Frogs' as an Old Comedy and Satire.">
+                                        <p><em>The Frogs</em> is a quintessential Old Attic Comedy, characterized by bold humor, fantasy, and sharp political commentary.
+                                        <br/><br/>
+                                        <strong>Old Comedy Elements:</strong> It uses crude, physical humor (scatology, phallic jokes) and mocks powerful figures. Even Dionysus, a god, is depicted as a cowardly buffoon who soils himself, effectively demystifying divine authority.
+                                        <br/><br/>
+                                        <strong>Satire:</strong> The play targets the decline of Athens. It satirizes politicians and demagogues (like Cleophon) who are blamed for the city's ruin. The literary contest between Aeschylus and Euripides is a high-brow satire on the corruption of public morals; Aristophanes argues that the "new" intellectualism of Euripides has weakened the citizens, while the "old" traditions of Aeschylus instilled bravery and virtue.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Does 'The Birds' celebrate democracy or tyranny?">
+                                        <p><em>The Birds</em> is an ambiguous satire that critiques democracy by showing how easily it slides into tyranny.
+                                        <br/><br/>
+                                        On the surface, the birds' collective action to build Cloud Cuckoo Land mirrors democratic ideals of participation. However, Pisthetaerus uses persuasive rhetoric (demagoguery) to manipulate the masses. He gradually eliminates opposition and turns from a citizen into a tyrant who challenges even the gods. Aristophanes suggests that democratic assemblies are vulnerable to manipulation by charismatic leaders who seek personal power under the guise of serving the people. The "bird democracy" simply reproduces the corruption it sought to escape.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Summarize Erich Auerbach's 'Mimesis'.">
+                                        <p>In <em>Mimesis: The Representation of Reality in Western Literature</em> (1946), Auerbach examines how literature represents reality. He contrasts two foundational styles:
+                                        <ul className="list-disc pl-5 my-2">
+                                            <li><strong>Homeric Style:</strong> Fully illuminated, external, and continuous. Everything is explicit and on the surface (e.g., <em>The Odyssey</em>).</li>
+                                            <li><strong>Biblical Style:</strong> Mysterious, fraught with background, and psychological depth. It relies on suggestion and gaps (e.g., The Sacrifice of Isaac).</li>
+                                        </ul>
+                                        Auerbach traces the evolution of realism from these roots through the Middle Ages and Renaissance to modernism (Woolf, Proust), arguing that literature has evolved toward a more profound realism capable of portraying the complexity of ordinary human experience.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Summarize T.S. Eliot's 'Tradition and the Individual Talent'.">
+                                        <p>In this essay, Eliot argues that "tradition" is not just imitating ancestors but possessing a "historical sense"—seeing the past as active in the present.
+                                        <br/><br/>
+                                        <strong>Key Arguments:</strong>
+                                        <ul className="list-disc pl-5 my-2">
+                                            <li><strong>The Simultaneous Whole:</strong> All literature forms a single order. A new work alters the way we see the past works; they measure each other.</li>
+                                            <li><strong>Depersonalization:</strong> The poet must surrender himself to the work. The progress of an artist is a "continual self-sacrifice."</li>
+                                            <li><strong>Catalyst Theory:</strong> The poet's mind is like a catalyst (e.g., platinum) that fuses emotions and feelings into a new compound (the poem) without leaving traces of the poet's own personality in it. Poetry is an escape from emotion, not an expression of it.</li>
+                                        </ul></p>
+                                    </QuestionBlock>
+                                </div>
+
+                                <div className="space-y-8">
+                                    <div className="bg-[#2c3e50] text-amber-50 px-6 py-4 rounded-lg flex items-center justify-between border-l-4 border-[#b48e43]">
+                                        <span className="font-serif font-bold text-xl">Category: Literary Terms & Theory</span>
+                                        <BookOpen className="text-[#b48e43]"/>
+                                    </div>
+
+                                    <QuestionBlock question="Q: Define Aristotle's concept of Tragedy and its elements.">
+                                        <p>Aristotle defines tragedy as an imitation of an action that is serious, complete, and of a certain magnitude, using embellished language. It is enacted, not narrated, and effects <strong>Catharsis</strong> (purgation) through pity and fear.
+                                        <br/><br/>
+                                        <strong>The Six Elements (in order of importance):</strong>
+                                        <ol className="list-decimal pl-5 my-2">
+                                            <li><strong>Plot (Mythos):</strong> The arrangement of incidents. It must have a beginning, middle, and end.</li>
+                                            <li><strong>Character:</strong> The agents of the action.</li>
+                                            <li><strong>Thought:</strong> The reasoning and ideas.</li>
+                                            <li><strong>Diction:</strong> The language used.</li>
+                                            <li><strong>Song/Melody:</strong> The chorus.</li>
+                                            <li><strong>Spectacle:</strong> The visual staging (least important).</li>
+                                        </ol></p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Explain the Structure of the Plot (Complication & Unravelling).">
+                                        <p>Aristotle divides the plot into two movements:
+                                        <br/>
+                                        <strong>1. Complication (Desis):</strong> The cause-and-effect chain leading from the beginning to the climax. It includes:
+                                        <ul className="list-disc pl-5 my-1">
+                                            <li><strong>Peripeteia (Reversal):</strong> A shift in fortune from good to bad (or vice versa), often occurring at the climax.</li>
+                                            <li><strong>Anagnorisis (Recognition):</strong> The shift from ignorance to knowledge (e.g., Oedipus realizing the truth).</li>
+                                        </ul>
+                                        <strong>2. Unravelling (Lysis):</strong> The resolution after the climax. It often involves <strong>Pathos</strong> (a scene of suffering), such as Oedipus blinding himself, which leads to Catharsis in the audience.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Define Hamartia and provide examples.">
+                                        <p><strong>Hamartia</strong> is the "tragic flaw" or error in judgment that causes the protagonist's downfall from a high status. It is not necessarily a sin, but a mistake inherent in their character.
+                                        <br/><br/>
+                                        <strong>Examples:</strong>
+                                        <ul className="list-disc pl-5 my-2">
+                                            <li><strong>Macbeth:</strong> Vaulting Ambition.</li>
+                                            <li><strong>Othello:</strong> Over-jealousy.</li>
+                                            <li><strong>Hamlet:</strong> Hesitation/Indecision.</li>
+                                            <li><strong>King Lear:</strong> Rashness.</li>
+                                        </ul></p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Distinguish between the types of Comedy.">
+                                        <p><ul className="list-disc pl-5 space-y-2">
+                                            <li><strong>Romantic Comedy:</strong> Focuses on love and overcoming obstacles to achieve a happy union (e.g., <em>As You Like It</em>). Often involves disguise and a "Green World" (forest/nature) where characters gain insight before returning to the city.</li>
+                                            <li><strong>Comedy of Manners:</strong> Satirizes the artificial behaviors, hypocrisy, and affectations of a specific social class.</li>
+                                            <li><strong>Comedy of Humors:</strong> Based on the four bodily humors (Blood, Phlegm, Choler, Melancholy). Characters are driven by a single dominant trait that cannot be changed (e.g., a stingy man is inherently stingy).</li>
+                                            <li><strong>Satiric Comedy:</strong> Uses irony and exaggeration to mock public figures and politics (e.g., Aristophanes).</li>
+                                        </ul></p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: What is Deus ex Machina?">
+                                        <p>Latin for "God from the machine." It refers to an artificial plot device where a god is lowered onto the stage (via a crane) to solve a seemingly unsolvable problem at the end of a play. Critics often view it as a weakness in the plot because the resolution does not come naturally from the internal logic of the story.</p>
+                                    </QuestionBlock>
+                                </div>
+                            </div>
+                        )}
+
+                    </main>
+                </div>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
