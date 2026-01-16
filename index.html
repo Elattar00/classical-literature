@@ -88,27 +88,64 @@
             BookOpen, Users, Scroll, Landmark, Clock, MapPin, Quote, 
             Feather, ChevronRight, Star, MessageCircle, HelpCircle, 
             Info, Home, Building2, UtensilsCrossed, Sparkles, Book, FileQuestion,
-            User, Crown, Shield, Sword, LayoutList, PenTool, Lightbulb, AlertTriangle, Music, Flame, ChevronDown
+            User, Crown, Shield, Sword, LayoutList, PenTool, Lightbulb, AlertTriangle, Music, Flame, ChevronDown, Menu
         } from 'lucide-react';
 
         // --- UI Components ---
 
         const ClassicalHeader = ({ title, subtitle, icon: Icon }) => (
-            <div className="relative mb-8 md:mb-12 text-center py-6 md:py-8">
+            <div className="relative mb-12 text-center py-8">
                 <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#b48e43] to-transparent opacity-40"></div>
-                <div className="relative inline-flex flex-col items-center bg-[#f9f7f1] px-4 md:px-8 py-2 z-10">
-                    <div className="bg-[#2c3e50] text-[#b48e43] w-12 h-12 rounded-full flex items-center justify-center shadow-lg mb-3 md:mb-4 border-2 border-[#b48e43]">
+                <div className="relative inline-flex flex-col items-center bg-[#f9f7f1] px-8 py-2 z-10">
+                    <div className="bg-[#2c3e50] text-[#b48e43] w-12 h-12 rounded-full flex items-center justify-center shadow-lg mb-4 border-2 border-[#b48e43]">
                         {Icon && <Icon size={24} />}
                     </div>
-                    <h2 className="text-2xl md:text-4xl font-bold text-[#2c3e50] tracking-tight leading-tight">{title}</h2>
-                    {subtitle && <p className="text-xs md:text-sm font-bold text-[#b48e43] uppercase tracking-[0.2em] mt-2">{subtitle}</p>}
+                    <h2 className="text-4xl font-bold text-[#2c3e50] tracking-tight leading-tight">{title}</h2>
+                    {subtitle && <p className="text-sm font-bold text-[#b48e43] uppercase tracking-[0.2em] mt-2">{subtitle}</p>}
                 </div>
             </div>
         );
 
+        // Updated: Responsive Collapsible Character Card
+        const CharacterCard = ({ char }) => {
+            const [isOpen, setIsOpen] = useState(false);
+
+            return (
+                <div className="group p-4 border border-stone-100 rounded hover:border-[#b48e43] hover:shadow-sm transition-all bg-stone-50/50">
+                    <div 
+                        className="flex justify-between items-start mb-2 cursor-pointer md:cursor-default"
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        <div className="flex-1 flex items-center gap-2">
+                            <span className={`font-bold text-base ${char.type === 'protagonist' ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
+                                {char.name}
+                            </span>
+                            <ChevronDown 
+                                size={16} 
+                                className={`text-stone-400 md:hidden transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+                            />
+                        </div>
+                        {char.sub && (
+                            <span className="text-[10px] text-white bg-stone-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold group-hover:bg-[#b48e43] transition-colors shrink-0">
+                                {char.sub}
+                            </span>
+                        )}
+                    </div>
+                    
+                    <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out md:grid-rows-[1fr] md:opacity-100 ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="text-sm text-stone-600 leading-snug pt-2 md:pt-0 border-t border-stone-200 md:border-0 mt-2 md:mt-0">
+                                {char.role}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const CompactCharacterSection = ({ characters }) => (
-            <div className="mb-8 md:mb-12">
-                <div className="bg-[#2c3e50] px-4 py-3 md:px-6 md:py-4 flex items-center justify-between rounded-t-lg border-b-4 border-[#b48e43]">
+            <div className="mb-12">
+                <div className="bg-[#2c3e50] px-6 py-4 flex items-center justify-between rounded-t-lg border-b-4 border-[#b48e43]">
                     <h3 className="text-amber-50 font-bold text-lg flex items-center gap-2">
                         <Users size={18} className="text-[#b48e43]" /> Dramatis Personae
                     </h3>
@@ -116,17 +153,7 @@
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-b-lg border border-stone-200 border-t-0 shadow-sm">
                     {characters.map((char, idx) => (
-                        <div key={idx} className="group p-4 border border-stone-100 rounded hover:border-[#b48e43] hover:shadow-sm transition-all bg-stone-50/50">
-                            <div className="flex justify-between items-start mb-2">
-                                <span className={`font-bold text-base ${char.type === 'protagonist' ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
-                                    {char.name}
-                                </span>
-                                {char.sub && <span className="text-[10px] text-white bg-stone-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold group-hover:bg-[#b48e43] transition-colors">{char.sub}</span>}
-                            </div>
-                            <div className="text-sm text-stone-600 leading-snug">
-                                {char.role}
-                            </div>
-                        </div>
+                        <CharacterCard key={idx} char={char} />
                     ))}
                 </div>
             </div>
@@ -137,7 +164,7 @@
             const [isOpen, setIsOpen] = useState(false);
 
             return (
-                <div className="flex gap-3 md:gap-6 mb-4 md:mb-6 group relative">
+                <div className="flex gap-4 sm:gap-6 mb-6 group relative">
                     <div className="absolute left-[19px] top-10 bottom-[-24px] w-0.5 bg-stone-200 group-last:hidden"></div>
                     
                     <div className="flex flex-col items-center shrink-0 relative z-10">
@@ -149,15 +176,15 @@
                     <div className="flex-1">
                         <button 
                             onClick={() => setIsOpen(!isOpen)}
-                            className="w-full text-left flex items-center justify-between bg-white p-3 md:p-4 rounded-lg border border-stone-200 shadow-sm hover:border-[#b48e43] transition-all duration-300 group"
+                            className="w-full text-left flex items-center justify-between bg-white p-4 rounded-lg border border-stone-200 shadow-sm hover:border-[#b48e43] transition-all duration-300 group"
                         >
-                            <h3 className={`font-serif font-bold text-base md:text-lg transition-colors ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>{title}</h3>
+                            <h3 className={`font-serif font-bold text-lg transition-colors ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>{title}</h3>
                             <ChevronRight size={20} className={`text-stone-400 transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-90' : ''}`} />
                         </button>
                         
                         <div className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                             <div className="overflow-hidden">
-                                <div className="mt-2 text-stone-700 leading-7 bg-white/50 p-3 md:p-4 rounded-lg border-l-2 border-[#b48e43] shadow-inner border-t border-stone-100">
+                                <div className="mt-2 text-stone-700 leading-7 bg-white/50 p-4 rounded-lg border-l-2 border-[#b48e43] shadow-inner border-t border-stone-100">
                                     {children}
                                 </div>
                             </div>
@@ -174,11 +201,11 @@
                 <div className="mb-4 border border-stone-200 rounded-lg bg-white shadow-sm overflow-hidden group hover:border-[#b48e43] transition-colors duration-300">
                     <button 
                         onClick={() => setIsOpen(!isOpen)}
-                        className="w-full text-left p-4 md:p-5 flex items-start justify-between gap-3 md:gap-4 select-none"
+                        className="w-full text-left p-5 flex items-start justify-between gap-4 select-none"
                     >
                         <div className="flex items-start gap-3">
                             <HelpCircle size={20} className={`shrink-0 mt-0.5 transition-colors duration-300 ${isOpen ? 'text-[#b48e43]' : 'text-stone-300 group-hover:text-[#b48e43]'}`} />
-                            <h4 className={`font-serif font-bold text-base md:text-lg leading-snug transition-colors duration-300 ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
+                            <h4 className={`font-serif font-bold text-lg leading-snug transition-colors duration-300 ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
                                 {question}
                             </h4>
                         </div>
@@ -187,8 +214,8 @@
                     
                     <div className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                         <div className="overflow-hidden">
-                            <div className="px-4 pb-4 md:px-5 md:pb-5 pt-0">
-                                <div className="pt-4 border-t border-stone-100 text-stone-700 leading-relaxed pl-4 md:pl-8 border-l-2 border-l-stone-100 ml-1 md:ml-2">
+                            <div className="px-5 pb-5 pt-0">
+                                <div className="pt-4 border-t border-stone-100 text-stone-700 leading-relaxed pl-8 border-l-2 border-l-stone-100 ml-2">
                                     {children}
                                 </div>
                             </div>
@@ -199,13 +226,13 @@
         };
 
         const DetailedQuoteCard = ({ text, speaker, listener, analysis }) => (
-            <div className="bg-white border-l-4 border-[#b48e43] rounded-r-lg p-4 md:p-6 my-4 md:my-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-                <div className="flex items-start gap-3 md:gap-4 relative z-10">
+            <div className="bg-white border-l-4 border-[#b48e43] rounded-r-lg p-6 my-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                <div className="flex items-start gap-4 relative z-10">
                     <div className="text-[#b48e43] opacity-20 shrink-0 mt-1">
                         <Quote size={40} fill="currentColor" />
                     </div>
                     <div className="flex-1">
-                        <blockquote className="serif-text text-base md:text-lg text-[#2c3e50] font-medium mb-4 leading-relaxed">
+                        <blockquote className="serif-text text-lg text-[#2c3e50] font-medium mb-4 leading-relaxed">
                             "{text}"
                         </blockquote>
                         <div className="flex flex-wrap items-center gap-3 mb-3 text-xs uppercase tracking-wide font-bold">
@@ -221,8 +248,8 @@
         );
 
         const AnalysisSection = ({ title, items, icon: Icon = BookOpen }) => (
-            <div className="my-8 md:my-10 bg-[#f8f9fa] rounded-xl border border-stone-200 p-4 md:p-6">
-                <h3 className="font-bold text-xl text-[#2c3e50] mb-4 md:mb-6 flex items-center gap-2 border-b border-stone-200 pb-3">
+            <div className="my-10 bg-[#f8f9fa] rounded-xl border border-stone-200 p-6">
+                <h3 className="font-bold text-xl text-[#2c3e50] mb-6 flex items-center gap-2 border-b border-stone-200 pb-3">
                     <Icon className="text-[#b48e43]" size={20}/> {title}
                 </h3>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -240,8 +267,8 @@
             <div className="my-8 border border-stone-200 rounded-lg overflow-hidden">
                 {items.map((item, i) => (
                     <div key={i} className="flex flex-col md:flex-row border-b border-stone-100 last:border-0">
-                        <div className="md:w-1/3 bg-stone-50 p-3 md:p-4 font-bold text-[#2c3e50] text-sm uppercase tracking-wide flex items-center">{item.label}</div>
-                        <div className="md:w-2/3 bg-white p-3 md:p-4 text-stone-700 text-sm border-l border-stone-100">{item.value}</div>
+                        <div className="md:w-1/3 bg-stone-50 p-4 font-bold text-[#2c3e50] text-sm uppercase tracking-wide flex items-center">{item.label}</div>
+                        <div className="md:w-2/3 bg-white p-4 text-stone-700 text-sm border-l border-stone-100">{item.value}</div>
                     </div>
                 ))}
             </div>
@@ -249,12 +276,12 @@
 
         const ChorusDebate = ({ leftTitle, leftContent, rightTitle, rightContent }) => (
             <div className="flex flex-col md:flex-row gap-0 my-8 rounded-xl overflow-hidden border border-stone-200 shadow-sm">
-                <div className="md:w-1/2 bg-[#2c3e50] p-5 md:p-8 text-stone-200 relative">
+                <div className="md:w-1/2 bg-[#2c3e50] p-8 text-stone-200 relative">
                     <div className="absolute top-4 right-4 opacity-10"><Users size={40}/></div>
                     <h4 className="font-serif font-bold text-lg text-[#b48e43] mb-3 pb-2 border-b border-stone-600">{leftTitle}</h4>
                     <p className="text-sm leading-relaxed opacity-90">{leftContent}</p>
                 </div>
-                <div className="md:w-1/2 bg-[#fffcf5] p-5 md:p-8 text-stone-800 relative">
+                <div className="md:w-1/2 bg-[#fffcf5] p-8 text-stone-800 relative">
                     <div className="absolute top-4 right-4 opacity-10 text-[#b48e43]"><Users size={40}/></div>
                     <h4 className="font-serif font-bold text-lg text-[#b48e43] mb-3 pb-2 border-b border-[#e5dcc5]">{rightTitle}</h4>
                     <p className="text-sm leading-relaxed">{rightContent}</p>
@@ -274,6 +301,7 @@
         const App = () => {
             const [activeTab, setActiveTab] = useState('intro');
             const [scrollProgress, setScrollProgress] = useState(0);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
             useEffect(() => {
                 const handleScroll = () => {
@@ -285,6 +313,17 @@
                 window.addEventListener('scroll', handleScroll);
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
+
+            const tabs = [
+                { id: 'intro', label: 'Intro & Origins' },
+                { id: 'lysistrata', label: 'Lysistrata' },
+                { id: 'birds', label: 'The Birds' },
+                { id: 'frogs', label: 'The Frogs' },
+                { id: 'prometheus', label: 'Prometheus Bound' },
+                { id: 'qbank', label: 'Question Bank' }
+            ];
+
+            const activeTabLabel = tabs.find(t => t.id === activeTab)?.label;
 
             return (
                 <div className="min-h-screen pb-24">
@@ -302,46 +341,69 @@
                                 </div>
                             </div>
 
-                            <nav className="flex p-1 bg-white/50 rounded-lg border border-stone-200/50 overflow-x-auto max-w-full no-scrollbar">
-                                {[
-                                    { id: 'intro', label: 'Intro & Origins' },
-                                    { id: 'lysistrata', label: 'Lysistrata' },
-                                    { id: 'birds', label: 'The Birds' },
-                                    { id: 'frogs', label: 'The Frogs' },
-                                    { id: 'prometheus', label: 'Prometheus Bound' },
-                                    { id: 'qbank', label: 'Question Bank' }
-                                ].map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`px-4 md:px-5 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all duration-200 whitespace-nowrap ${
-                                            activeTab === tab.id 
-                                            ? 'bg-[#2c3e50] text-white shadow-md' 
-                                            : 'text-stone-500 hover:text-[#2c3e50] hover:bg-stone-100'
-                                        }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </nav>
+                            {/* Navigation Container */}
+                            <div className="w-full md:w-auto relative">
+                                
+                                {/* Mobile Trigger Button (Visible only on mobile) */}
+                                <button 
+                                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                    className="md:hidden w-full flex items-center justify-between px-4 py-3 bg-[#2c3e50] text-white rounded-lg shadow-sm active:scale-[0.99] transition-transform"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Menu size={16} className="text-[#b48e43]" />
+                                        <span className="font-bold uppercase tracking-wide text-xs">{activeTabLabel}</span>
+                                    </div>
+                                    <ChevronDown size={16} className={`text-[#b48e43] transition-transform duration-300 ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {/* Navigation Links */}
+                                {/* Logic: 
+                                    - Mobile: Hidden by default, expands as a grid when isMobileMenuOpen is true.
+                                    - Desktop: Always visible as a flex row, ignoring the isMobileMenuOpen state.
+                                */}
+                                <nav className={`
+                                    overflow-hidden transition-[max-height,opacity] duration-500 ease-in-out
+                                    ${isMobileMenuOpen ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 md:max-h-full md:opacity-100 md:mt-0'}
+                                    md:flex md:gap-0 md:p-1 md:bg-white/50 md:rounded-lg md:border md:border-stone-200/50 md:overflow-visible
+                                `}>
+                                    <div className="grid grid-cols-2 gap-2 md:flex md:gap-0">
+                                        {tabs.map((tab) => (
+                                            <button
+                                                key={tab.id}
+                                                onClick={() => {
+                                                    setActiveTab(tab.id);
+                                                    setIsMobileMenuOpen(false);
+                                                }}
+                                                className={`px-4 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all duration-200 whitespace-nowrap ${
+                                                    activeTab === tab.id 
+                                                    ? 'bg-[#2c3e50] text-white shadow-md' 
+                                                    : 'bg-white md:bg-transparent text-stone-500 hover:text-[#2c3e50] hover:bg-stone-100 border border-stone-100 md:border-0'
+                                                }`}
+                                            >
+                                                {tab.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </nav>
+                            </div>
                         </div>
                     </header>
 
-                    <main className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10 relative z-10">
+                    <main className="max-w-4xl mx-auto px-4 md:px-6 py-10 relative z-10">
 
                         {/* TAB 1: INTRODUCTION */}
                         {activeTab === 'intro' && (
                             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <ClassicalHeader title="The Classical Age" subtitle="Context & Foundations" icon={Scroll} />
                                 
-                                <div className="text-base md:text-lg text-stone-700 mb-8 md:mb-10 leading-relaxed">
+                                <div className="text-lg text-stone-700 mb-10 leading-relaxed">
                                     <p className="mb-6">
                                         We are in the classical days, a period defined by structure and philosophy. Drama in this era was written strictly according to the <strong>Aristotelian units</strong>: unity of time, unity of action, and unity of place.
                                     </p>
                                     
-                                    <div className="bg-white p-6 md:p-8 rounded-lg border-t-4 border-[#b48e43] shadow-sm mb-10">
-                                        <h3 className="font-sans font-bold text-xl md:text-2xl mb-4 md:mb-6 text-[#2c3e50]">The Three Unities</h3>
-                                        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+                                    <div className="bg-white p-8 rounded-lg border-t-4 border-[#b48e43] shadow-sm mb-10">
+                                        <h3 className="font-sans font-bold text-2xl mb-6 text-[#2c3e50]">The Three Unities</h3>
+                                        <div className="grid md:grid-cols-3 gap-8">
                                             <div className="text-center">
                                                 <Clock className="text-[#b48e43] mx-auto mb-3" size={28} />
                                                 <strong className="block text-[#2c3e50] mb-2 font-sans uppercase text-sm tracking-wide">Unity of Time</strong>
@@ -360,18 +422,18 @@
                                         </div>
                                     </div>
 
-                                    <div className="flex gap-4 md:gap-6 items-start bg-[#2c3e50] text-stone-300 p-5 md:p-8 rounded-lg mb-8 md:mb-12 shadow-lg">
+                                    <div className="flex gap-6 items-start bg-[#2c3e50] text-stone-300 p-8 rounded-lg mb-12 shadow-lg">
                                         <Feather size={40} className="text-[#b48e43] shrink-0 mt-1" />
                                         <div>
-                                            <h3 className="font-serif font-bold text-lg md:text-xl text-white mb-2">Comparison: Classical vs. Shakespearean</h3>
+                                            <h3 className="font-serif font-bold text-xl text-white mb-2">Comparison: Classical vs. Shakespearean</h3>
                                             <p className="leading-relaxed text-sm">
                                                 Classical literature is more demanding due to its constraints. A Shakespearean tragedy like <em>Macbeth</em> is about 450 pages because it does not stick to the three units (spanning years and countries). On the other hand, a classical play is only about 50 pages because it adheres strictly to these units, compressing the narrative density.
                                             </p>
                                         </div>
                                     </div>
 
-                                    <h3 className="font-serif font-bold text-xl md:text-2xl mb-4 text-[#2c3e50] border-b border-stone-300 pb-2">Aristophanes (c. 450–388 BCE)</h3>
-                                    <div className="bg-[#fffcf5] border border-[#e5dcc5] p-4 md:p-6 rounded-lg">
+                                    <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50] border-b border-stone-300 pb-2">Aristophanes (c. 450–388 BCE)</h3>
+                                    <div className="bg-[#fffcf5] border border-[#e5dcc5] p-6 rounded-lg">
                                         <p className="text-stone-700 leading-relaxed mb-4">
                                             He is the greatest surviving representative of ancient Greek comedy and the only surviving example of the <strong>Old Comedy</strong>.
                                         </p>
@@ -388,12 +450,12 @@
                             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                                 <ClassicalHeader title="Lysistrata" subtitle="411 BCE | The Anti-War Comedy" icon={Users} />
 
-                                <div className="bg-white p-6 md:p-8 rounded-lg border border-stone-200 shadow-sm mb-8 md:mb-12 flex gap-4 md:gap-6 items-center">
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12 flex gap-6 items-center">
                                     <div className="hidden md:block bg-[#b48e43] text-white p-4 rounded-full">
                                         <Info size={32} />
                                     </div>
                                     <div>
-                                        <h3 className="font-serif font-bold text-xl md:text-2xl mb-2 text-[#2c3e50]">In Brief</h3>
+                                        <h3 className="font-serif font-bold text-2xl mb-2 text-[#2c3e50]">In Brief</h3>
                                         <p className="text-stone-700 leading-relaxed">
                                             <em>Lysistrata</em> is a bawdy anti-war comedy. It is the account of one woman's extraordinary mission to end the Peloponnesian War. Lysistrata convinces the women of Greece to <strong>refuse to have sex with their husbands</strong> as a means of forcing the men to negotiate a peace.
                                         </p>
@@ -411,7 +473,7 @@
                                 ]} />
 
                                 <div className="mb-14">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
                                         <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
                                     </h3>
                                     
@@ -453,7 +515,7 @@
                                 </div>
 
                                 <div className="mb-14">
-                                    <h3 className="font-serif font-bold text-xl md:text-2xl mb-6 text-center text-[#2c3e50]">Analysis: The Battle of the Choruses</h3>
+                                    <h3 className="font-serif font-bold text-2xl mb-6 text-center text-[#2c3e50]">Analysis: The Battle of the Choruses</h3>
                                     <ChorusDebate 
                                         leftTitle="Chorus of Old Men"
                                         leftContent="Composed of weak, shaky, doddering old men. They are comically useless and powerless. They represent the pro-war stance and masculinity. They carry fire (torches), a symbol of male power and destruction."
@@ -470,8 +532,8 @@
                                 <ClassicalHeader title="The Birds" subtitle="414 BCE | Cloud Cuckoo Land" icon={Feather} />
 
                                 {/* Intro */}
-                                <div className="bg-white p-6 md:p-8 rounded-lg border border-stone-200 shadow-sm mb-8 md:mb-12">
-                                    <h3 className="font-serif font-bold text-xl md:text-2xl mb-4 text-[#2c3e50]">Historical Context</h3>
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
+                                    <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">Historical Context</h3>
                                     <p className="text-stone-700 leading-relaxed mb-4">
                                         Premiered in 414 BCE during the Peloponnesian War. Roughly a year earlier, Athens had launched the massive <strong>Sicilian Expedition</strong> with hopes of conquering Syracuse.
                                     </p>
@@ -518,7 +580,7 @@
 
                                 {/* Plot */}
                                 <div className="mb-14">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
                                         <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
                                     </h3>
                                     <div className="space-y-2">
@@ -584,7 +646,7 @@
 
                                 {/* Quotations */}
                                 <div className="mb-14 border-t border-stone-300 pt-12">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 text-[#2c3e50]">
                                         <Quote className="text-[#b48e43]"/> Essential Quotations Bank
                                     </h3>
                                     
@@ -725,7 +787,7 @@
                                 <ClassicalHeader title="The Frogs" subtitle="405 BCE | Aristophanes" icon={Landmark} />
 
                                 {/* Intro */}
-                                <div className="bg-white p-6 md:p-8 rounded-lg border border-stone-200 shadow-sm mb-8 md:mb-12">
+                                <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
                                     <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">Overview</h3>
                                     <p className="text-stone-700 leading-relaxed mb-4">
                                         A comedic play where Dionysus, the god of wine and theater, travels to Hades (the Underworld) to bring back a great poet to save Athens from its political and artistic decline.
@@ -755,7 +817,7 @@
 
                                 {/* Plot */}
                                 <div className="mb-14">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
                                         <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
                                     </h3>
                                     <div className="space-y-2">
@@ -810,7 +872,7 @@
                                 ]} />
 
                                 <div className="mb-14 border-t border-stone-300 pt-12">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 text-[#2c3e50]">
                                         <Quote className="text-[#b48e43]"/> Essential Quotations Bank
                                     </h3>
 
@@ -886,7 +948,7 @@
                                 </div>
 
                                 <div className="mb-14">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-2xl mb-6 flex items-center gap-2">
                                         <Book className="text-[#b48e43]"/> Glossary
                                     </h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -944,7 +1006,7 @@
 
                                 {/* Plot */}
                                 <div className="mb-14">
-                                    <h3 className="font-serif font-bold text-2xl md:text-3xl mb-6 md:mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
+                                    <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
                                         <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
                                     </h3>
                                     <div className="space-y-2">
