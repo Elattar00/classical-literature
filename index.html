@@ -123,7 +123,7 @@
                                 </span>
                                 {char.sub && <span className="text-[10px] text-white bg-stone-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-bold group-hover:bg-[#b48e43] transition-colors">{char.sub}</span>}
                             </div>
-                            <div className="text-sm serif-text text-stone-600 leading-snug">
+                            <div className="text-sm text-stone-600 leading-snug">
                                 {char.role}
                             </div>
                         </div>
@@ -132,6 +132,7 @@
             </div>
         );
 
+        // Updated Plot Block with Smooth Height Animation
         const PlotBlock = ({ title, children, index }) => {
             const [isOpen, setIsOpen] = useState(false);
 
@@ -140,7 +141,7 @@
                     <div className="absolute left-[19px] top-10 bottom-[-24px] w-0.5 bg-stone-200 group-last:hidden"></div>
                     
                     <div className="flex flex-col items-center shrink-0 relative z-10">
-                        <div className={`w-10 h-10 rounded-full border-2 font-bold font-serif flex items-center justify-center shadow-sm transition-colors duration-200 ${isOpen ? 'bg-[#b48e43] text-white border-[#b48e43]' : 'bg-white border-[#b48e43] text-[#b48e43]'}`}>
+                        <div className={`w-10 h-10 rounded-full border-2 font-bold font-serif flex items-center justify-center shadow-sm transition-colors duration-300 ${isOpen ? 'bg-[#b48e43] text-white border-[#b48e43]' : 'bg-white border-[#b48e43] text-[#b48e43]'}`}>
                             {index}
                         </div>
                     </div>
@@ -148,46 +149,51 @@
                     <div className="flex-1">
                         <button 
                             onClick={() => setIsOpen(!isOpen)}
-                            className="w-full text-left flex items-center justify-between bg-white p-4 rounded-lg border border-stone-200 shadow-sm hover:border-[#b48e43] transition-all group"
+                            className="w-full text-left flex items-center justify-between bg-white p-4 rounded-lg border border-stone-200 shadow-sm hover:border-[#b48e43] transition-all duration-300 group"
                         >
-                            <h3 className={`font-serif font-bold text-lg ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>{title}</h3>
-                            <ChevronRight size={20} className={`text-stone-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+                            <h3 className={`font-serif font-bold text-lg transition-colors ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>{title}</h3>
+                            <ChevronRight size={20} className={`text-stone-400 transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-90' : ''}`} />
                         </button>
                         
-                        {isOpen && (
-                            <div className="mt-2 text-stone-700 leading-7 serif-text bg-white/50 p-4 rounded-lg border-l-2 border-[#b48e43] animate-slide-down shadow-inner border-t border-stone-100">
-                                {children}
+                        <div className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="mt-2 text-stone-700 leading-7 bg-white/50 p-4 rounded-lg border-l-2 border-[#b48e43] shadow-inner border-t border-stone-100">
+                                    {children}
+                                </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             );
         };
 
+        // Updated Question Block with Smooth Height Animation
         const QuestionBlock = ({ question, children }) => {
             const [isOpen, setIsOpen] = useState(false);
             return (
-                <div className="mb-4 border border-stone-200 rounded-lg bg-white shadow-sm overflow-hidden group hover:border-[#b48e43] transition-colors">
+                <div className="mb-4 border border-stone-200 rounded-lg bg-white shadow-sm overflow-hidden group hover:border-[#b48e43] transition-colors duration-300">
                     <button 
                         onClick={() => setIsOpen(!isOpen)}
                         className="w-full text-left p-5 flex items-start justify-between gap-4 select-none"
                     >
                         <div className="flex items-start gap-3">
-                            <HelpCircle size={20} className={`shrink-0 mt-0.5 transition-colors ${isOpen ? 'text-[#b48e43]' : 'text-stone-300 group-hover:text-[#b48e43]'}`} />
-                            <h4 className={`font-serif font-bold text-lg leading-snug ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
+                            <HelpCircle size={20} className={`shrink-0 mt-0.5 transition-colors duration-300 ${isOpen ? 'text-[#b48e43]' : 'text-stone-300 group-hover:text-[#b48e43]'}`} />
+                            <h4 className={`font-serif font-bold text-lg leading-snug transition-colors duration-300 ${isOpen ? 'text-[#b48e43]' : 'text-[#2c3e50]'}`}>
                                 {question}
                             </h4>
                         </div>
-                        <ChevronDown size={20} className={`shrink-0 text-stone-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={20} className={`shrink-0 text-stone-400 transition-transform duration-500 ease-in-out ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                     
-                    {isOpen && (
-                        <div className="px-5 pb-5 pt-0 animate-slide-down">
-                            <div className="pt-4 border-t border-stone-100 text-stone-700 leading-relaxed serif-text pl-8 border-l-2 border-l-stone-100 ml-2">
-                                {children}
+                    <div className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="px-5 pb-5 pt-0">
+                                <div className="pt-4 border-t border-stone-100 text-stone-700 leading-relaxed pl-8 border-l-2 border-l-stone-100 ml-2">
+                                    {children}
+                                </div>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             );
         };
@@ -223,7 +229,7 @@
                     {items.map((item, idx) => (
                         <div key={idx}>
                             <strong className="block text-[#2c3e50] mb-1 font-serif text-lg">{item.term}</strong>
-                            <p className="text-sm text-stone-600 leading-relaxed serif-text">{item.def}</p>
+                            <p className="text-sm text-stone-600 leading-relaxed">{item.def}</p>
                         </div>
                     ))}
                 </div>
@@ -235,7 +241,7 @@
                 {items.map((item, i) => (
                     <div key={i} className="flex flex-col md:flex-row border-b border-stone-100 last:border-0">
                         <div className="md:w-1/3 bg-stone-50 p-4 font-bold text-[#2c3e50] text-sm uppercase tracking-wide flex items-center">{item.label}</div>
-                        <div className="md:w-2/3 bg-white p-4 text-stone-700 text-sm serif-text border-l border-stone-100">{item.value}</div>
+                        <div className="md:w-2/3 bg-white p-4 text-stone-700 text-sm border-l border-stone-100">{item.value}</div>
                     </div>
                 ))}
             </div>
@@ -246,12 +252,12 @@
                 <div className="md:w-1/2 bg-[#2c3e50] p-8 text-stone-200 relative">
                     <div className="absolute top-4 right-4 opacity-10"><Users size={40}/></div>
                     <h4 className="font-serif font-bold text-lg text-[#b48e43] mb-3 pb-2 border-b border-stone-600">{leftTitle}</h4>
-                    <p className="text-sm leading-relaxed opacity-90 serif-text">{leftContent}</p>
+                    <p className="text-sm leading-relaxed opacity-90">{leftContent}</p>
                 </div>
                 <div className="md:w-1/2 bg-[#fffcf5] p-8 text-stone-800 relative">
                     <div className="absolute top-4 right-4 opacity-10 text-[#b48e43]"><Users size={40}/></div>
                     <h4 className="font-serif font-bold text-lg text-[#b48e43] mb-3 pb-2 border-b border-[#e5dcc5]">{rightTitle}</h4>
-                    <p className="text-sm leading-relaxed serif-text">{rightContent}</p>
+                    <p className="text-sm leading-relaxed">{rightContent}</p>
                 </div>
             </div>
         );
@@ -259,7 +265,7 @@
         const GlossaryTerm = ({ word, def }) => (
             <div className="flex flex-col p-3 bg-white rounded border border-stone-100 shadow-sm hover:border-[#b48e43] transition-colors h-full">
                 <div className="text-[#2c3e50] text-xs font-black uppercase tracking-wider mb-1 text-[#b48e43]">{word}</div>
-                <div className="text-xs text-stone-600 serif-text leading-relaxed">{def}</div>
+                <div className="text-xs text-stone-600 leading-relaxed">{def}</div>
             </div>
         );
 
@@ -328,7 +334,7 @@
                             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <ClassicalHeader title="The Classical Age" subtitle="Context & Foundations" icon={Scroll} />
                                 
-                                <div className="serif-text text-lg text-stone-700 mb-10 leading-relaxed">
+                                <div className="text-lg text-stone-700 mb-10 leading-relaxed">
                                     <p className="mb-6">
                                         We are in the classical days, a period defined by structure and philosophy. Drama in this era was written strictly according to the <strong>Aristotelian units</strong>: unity of time, unity of action, and unity of place.
                                     </p>
@@ -367,10 +373,10 @@
                                     <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50] border-b border-stone-300 pb-2">Aristophanes (c. 450–388 BCE)</h3>
                                     <div className="bg-[#fffcf5] border border-[#e5dcc5] p-6 rounded-lg">
                                         <p className="text-stone-700 leading-relaxed mb-4">
-                                            He is the greatest representative of ancient Greek comedy and the only extant representative of the <strong>Old Comedy</strong>.
+                                            He is the greatest surviving representative of ancient Greek comedy and the only surviving example of the <strong>Old Comedy</strong>.
                                         </p>
                                         <p className="text-stone-700 leading-relaxed">
-                                            <strong>Old Comedy</strong> is characterized by bold fantasy, merciless invective, outrageous satire, and a chorus that plays a considerable part. Aristophanes belongs to the end of this phase; his last play has no choric element, marking the transition to Middle and New Comedy.
+                                            <strong>Old Comedy</strong> is characterized by bold fantasy, cruel insults, outrageous satire, and openly inappropriate humor, and a chorus that plays a considerable part. Aristophanes belongs to the end of this phase; his last play has no choric element, marking the transition to Middle and New Comedy (which replaced Old Comedy).
                                         </p>
                                     </div>
                                 </div>
@@ -388,8 +394,8 @@
                                     </div>
                                     <div>
                                         <h3 className="font-serif font-bold text-2xl mb-2 text-[#2c3e50]">In Brief</h3>
-                                        <p className="text-stone-700 leading-relaxed serif-text">
-                                            <em>Lysistrata</em> is a bawdy anti-war comedy. It is the account of one woman's extraordinary mission to end the Peloponnesian War. Lysistrata convinces the women of Greece to <strong>withhold sexual privileges from their husbands</strong> as a means of forcing the men to negotiate a peace.
+                                        <p className="text-stone-700 leading-relaxed">
+                                            <em>Lysistrata</em> is a bawdy anti-war comedy. It is the account of one woman's extraordinary mission to end the Peloponnesian War. Lysistrata convinces the women of Greece to <strong>refuse to have sex with their husbands</strong> as a means of forcing the men to negotiate a peace.
                                         </p>
                                     </div>
                                 </div>
@@ -413,7 +419,7 @@
                                         <PlotBlock title="Scene 1: The Great Plan" index={1}>
                                             <p>An Athenian woman named Lysistrata asks women from all over Greece (including enemies like Sparta) to meet her in the marketplace below the Acropolis. She proposes a bold, two-part plan to end the war:</p>
                                             <ul className="list-disc pl-5 mt-2 space-y-1">
-                                                <li><strong>Part 1 (The Body):</strong> The younger women must vow to withhold all sexual privileges from their husbands until the men negotiate peace.</li>
+                                                <li><strong>Part 1 (The Body):</strong> The younger women must vow to refuse to have sex with their husbands until the men negotiate peace.</li>
                                                 <li><strong>Part 2 (The Money):</strong> A band of older women has already been sent to seize the Acropolis, which holds the treasury. Without money, the politicians cannot wage war.</li>
                                             </ul>
                                             <p className="mt-2">After some reluctance, the women agree. Lampito is sent back to Sparta to organize the strike there, while Lysistrata and the others barricade themselves in the Acropolis.</p>
@@ -450,9 +456,9 @@
                                     <h3 className="font-serif font-bold text-2xl mb-6 text-center text-[#2c3e50]">Analysis: The Battle of the Choruses</h3>
                                     <ChorusDebate 
                                         leftTitle="Chorus of Old Men"
-                                        leftContent="Composed of weak, shaky, doddering old men. They are comically inept and impotent. They represent the pro-war stance and masculinity. They carry fire (torches), a symbol of male power and destruction."
+                                        leftContent="Composed of weak, shaky, doddering old men. They are comically useless and powerless. They represent the pro-war stance and masculinity. They carry fire (torches), a symbol of male power and destruction."
                                         rightTitle="Chorus of Old Women"
-                                        rightContent="Feistier than the men. They represent the women Lysistrata sent to seize the Acropolis. Since they are older, they are not part of the sex strike. They carry water, symbolizing life and the power to extinguish male aggression."
+                                        rightContent="More energetic/aggressive than the men. They represent the women Lysistrata sent to seize the Acropolis. Since they are older, they are not part of the sex strike. They carry water, symbolizing life and the power to extinguish male aggression."
                                     />
                                 </div>
                             </div>
@@ -466,11 +472,11 @@
                                 {/* Intro */}
                                 <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
                                     <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">Historical Context</h3>
-                                    <p className="text-stone-700 leading-relaxed serif-text mb-4">
+                                    <p className="text-stone-700 leading-relaxed mb-4">
                                         Premiered in 414 BCE during the Peloponnesian War. Roughly a year earlier, Athens had launched the massive <strong>Sicilian Expedition</strong> with hopes of conquering Syracuse.
                                     </p>
-                                    <p className="text-stone-700 leading-relaxed serif-text">
-                                        <strong>Cloud Cuckoo Land</strong> is a symbol of ridiculously misplaced optimism—verging on delusional lunacy. It mirrors the rumors and wild expectations of the Athenians regarding the invasion. A year after the play, the invasion failed, and every Athenian soldier was killed or enslaved.
+                                    <p className="text-stone-700 leading-relaxed">
+                                        <strong>Cloud Cuckoo Land</strong> is a symbol of ridiculously misplaced optimism—bordering on crazy delusion. It mirrors the rumors and wild expectations of the Athenians regarding the invasion. A year after the play, the invasion failed, and every Athenian soldier was killed or enslaved.
                                     </p>
                                 </div>
 
@@ -572,7 +578,7 @@
                                     {term: "Feed in Gardens (Metaphor)", def: "Represents sexual appetites and unrestrained living."},
                                     {term: "Half-Transformed (Metaphor)", def: "Men only get wings and crowns. They cannot fully leave themselves behind. They are capable of only so much metamorphosis."},
                                     {term: "Irony: Negotiation", def: "Three powerful gods (Poseidon, Heracles) could crush Pisthetaerus, but they surrender simply because they are hungry."},
-                                    {term: "Irony: Bird City", def: "The birds build the city in moments, shocking Pisthetaerus with their industriousness."},
+                                    {term: "Irony: Bird City", def: "The birds build the city in moments, shocking Pisthetaerus with their hard work."},
                                     {term: "Irony: Directions", def: "The guides (crow/jackdaw) lead them into a rocky wilderness. They realize they must look 'up', not 'out'."}
                                 ]} />
 
@@ -721,10 +727,10 @@
                                 {/* Intro */}
                                 <div className="bg-white p-8 rounded-lg border border-stone-200 shadow-sm mb-12">
                                     <h3 className="font-serif font-bold text-2xl mb-4 text-[#2c3e50]">Overview</h3>
-                                    <p className="text-stone-700 leading-relaxed serif-text mb-4">
+                                    <p className="text-stone-700 leading-relaxed mb-4">
                                         A comedic play where Dionysus, the god of wine and theater, travels to Hades (the Underworld) to bring back a great poet to save Athens from its political and artistic decline.
                                     </p>
-                                    <p className="text-stone-700 leading-relaxed serif-text">
+                                    <p className="text-stone-700 leading-relaxed">
                                         It culminates in a poetry contest between Euripides (modern/clever) and Aeschylus (traditional/wise), where Dionysus must choose who to resurrect to guide the city.
                                     </p>
                                 </div>
