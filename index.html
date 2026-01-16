@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Classical Literature</title>
+    <title>Classical Literature | Elattar</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -106,7 +106,7 @@
             </div>
         );
 
-        // Updated: Responsive Collapsible Character Card
+        // Responsive Collapsible Character Card
         const CharacterCard = ({ char }) => {
             const [isOpen, setIsOpen] = useState(false);
 
@@ -357,32 +357,32 @@
                                 </button>
 
                                 {/* Navigation Links */}
-                                {/* Logic: 
-                                    - Mobile: Hidden by default, expands as a grid when isMobileMenuOpen is true.
-                                    - Desktop: Always visible as a flex row, ignoring the isMobileMenuOpen state.
-                                */}
                                 <nav className={`
-                                    overflow-hidden transition-[max-height,opacity] duration-500 ease-in-out
-                                    ${isMobileMenuOpen ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 md:max-h-full md:opacity-100 md:mt-0'}
-                                    md:flex md:gap-0 md:p-1 md:bg-white/50 md:rounded-lg md:border md:border-stone-200/50 md:overflow-visible
+                                    grid transition-[grid-template-rows,opacity,margin-top] duration-500 ease-in-out
+                                    ${isMobileMenuOpen 
+                                        ? 'grid-rows-[1fr] opacity-100 mt-2' 
+                                        : 'grid-rows-[0fr] opacity-0 mt-0'}
+                                    md:flex md:grid-rows-none md:opacity-100 md:mt-0 md:gap-0 md:p-1 md:bg-white/50 md:rounded-lg md:border md:border-stone-200/50 md:overflow-visible
                                 `}>
-                                    <div className="grid grid-cols-2 gap-2 md:flex md:gap-0">
-                                        {tabs.map((tab) => (
-                                            <button
-                                                key={tab.id}
-                                                onClick={() => {
-                                                    setActiveTab(tab.id);
-                                                    setIsMobileMenuOpen(false);
-                                                }}
-                                                className={`px-4 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all duration-200 whitespace-nowrap ${
-                                                    activeTab === tab.id 
-                                                    ? 'bg-[#2c3e50] text-white shadow-md' 
-                                                    : 'bg-white md:bg-transparent text-stone-500 hover:text-[#2c3e50] hover:bg-stone-100 border border-stone-100 md:border-0'
-                                                }`}
-                                            >
-                                                {tab.label}
-                                            </button>
-                                        ))}
+                                    <div className="overflow-hidden md:overflow-visible">
+                                        <div className="grid grid-cols-2 gap-2 md:flex md:gap-0">
+                                            {tabs.map((tab) => (
+                                                <button
+                                                    key={tab.id}
+                                                    onClick={() => {
+                                                        setActiveTab(tab.id);
+                                                        setIsMobileMenuOpen(false);
+                                                    }}
+                                                    className={`px-4 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all duration-200 whitespace-nowrap ${
+                                                        activeTab === tab.id 
+                                                        ? 'bg-[#2c3e50] text-white shadow-md' 
+                                                        : 'bg-white md:bg-transparent text-stone-500 hover:text-[#2c3e50] hover:bg-stone-100 border border-stone-100 md:border-0'
+                                                    }`}
+                                                >
+                                                    {tab.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </nav>
                             </div>
@@ -461,16 +461,6 @@
                                         </p>
                                     </div>
                                 </div>
-
-                                <CompactCharacterSection characters={[
-                                    {name: "Lysistrata", sub: "Protagonist", role: "Leader of the Athenian wives. Her name means 'Disbander of Armies'. Driven, insightful, charismatic. She is a cool-headed strategist who resembles the goddess Athena in her vision for a united Greece.", type: 'protagonist'},
-                                    {name: "Myrrhine", sub: "The Coy Wife", role: "A young, coy, and playful woman. She is famous for the scene where she tortures her husband Cinesias by promising sex and then denying it. She represents the use of 'the body' as a political tool."},
-                                    {name: "Lampito", sub: "Spartan Ally", role: "A strong, beautiful Spartan woman. She is Lysistrata's steadfast counterpart from the enemy side, showing that women across Greece are united."},
-                                    {name: "Calonice", sub: "Neighbor", role: "A mature, lusty woman of Athens (sometimes referred to as Calonike). She is a neighbor to Lysistrata."},
-                                    {name: "The Magistrate", sub: "Antagonist", role: "A blustering, war-mongering authority figure. He represents the misogynistic establishment. He is defeated by Lysistrata's logic when she argues that managing a state is like managing a household."},
-                                    {name: "Cinesias", sub: "The Husband", role: "An Athenian citizen, Myrrhine's husband. A chauvinistic and desperate man. He arrives at the Acropolis begging for his wife. He represents the suffering of men under the sex strike."},
-                                    {name: "Spartan Herald", sub: "Messenger", role: "Arrives concealing an erection, proving that the strike is working in Sparta as well."}
-                                ]} />
 
                                 <div className="mb-14">
                                     <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
@@ -998,8 +988,6 @@
                                     {name: "Chorus", sub: "Oceanids", role: "The daughters of Oceanus, a group of sea nymphs who represent the attitudes of the typical citizen/sympathy.", type: 'neutral'},
                                     {name: "Hephaestus", sub: "God", role: "God of fire and forge. He is ordered to chain Prometheus but does so reluctantly, feeling sympathy for him.", type: 'neutral'},
                                     {name: "Strength", sub: "Enforcer", role: "A thuggish male underling of Zeus. He echoes Zeus's belligerent attitude and jeers at Prometheus.", type: 'antagonist'},
-                                    {name: "Violence", sub: "Enforcer", role: "A female underling sent to effect the punishment. She speaks no lines.", type: 'antagonist'},
-                                    {name: "Oceanus", sub: "God", role: "God of the ocean. He expresses sympathy but urges Prometheus to restrain his speech and submit to Zeus.", type: 'neutral'},
                                     {name: "Io", sub: "Victim", role: "A mortal woman loved by Zeus, transformed into a cow, and stung by a gadfly. Her suffering parallels Prometheus's.", type: 'neutral'},
                                     {name: "Hermes", sub: "Messenger", role: "Zeus's messenger who arrives to demand Prometheus reveal the secret of who will overthrow Zeus.", type: 'antagonist'}
                                 ]} />
@@ -1007,33 +995,17 @@
                                 {/* Plot */}
                                 <div className="mb-14">
                                     <h3 className="font-serif font-bold text-3xl mb-8 flex items-center gap-3 border-b-2 border-[#b48e43] pb-2 w-fit text-[#2c3e50]">
-                                        <Scroll className="text-[#b48e43]"/> Detailed Plot Analysis
+                                        <Scroll className="text-[#b48e43]"/> Context & Relationship
                                     </h3>
                                     <div className="space-y-2">
-                                        <PlotBlock title="Mythological Background" index={0}>
-                                            <p>Prometheus, whose name means 'Forethinker', was a Titan who defected to help Zeus defeat Cronos. He created man and taught them crafts. However, man lacked fire, which Zeus denied. Prometheus stole fire for man, leading to his punishment. This backstory sets the stage for the play.</p>
-                                        </PlotBlock>
-                                        <PlotBlock title="The Binding" index={1}>
-                                            <p>Strength (Might) and Violence restrain Prometheus. Strength heaps abuse on him while Hephaestus, the smith god, reluctantly chains Prometheus to the desolate mountain rock. Hephaestus pities his kin but must obey. They leave Prometheus alone, who laments his excessive and cruel punishment.</p>
-                                        </PlotBlock>
-                                        <PlotBlock title="The Chorus & Oceanus" index={2}>
-                                            <p>The Oceanids (Chorus) arrive to comfort Prometheus. Later, Oceanus enters on a winged beast. He offers to go to Olympus to plead Prometheus's case. Prometheus warns him that this will only bring Zeus's wrath upon him. Oceanus, valuing self-preservation, returns home.</p>
-                                        </PlotBlock>
-                                        <PlotBlock title="Io's Suffering" index={3}>
-                                            <p>Io, transformed into a cow and pursued by a gadfly due to Hera's jealousy over Zeus's lust, arrives. She begs for a prophecy. Prometheus reveals her future wanderings will be long and arduous, but eventually, she will find a home (Egypt) and bear a great family. From her line, a deliverer (Heracles) will eventually come to free Prometheus.</p>
-                                        </PlotBlock>
-                                        <PlotBlock title="The Secret & The End" index={4}>
-                                            <p>Prometheus reveals he holds a secret crucial to Zeus's survival: Zeus will make a marriage that leads to his downfall (a son stronger than the father). Hermes arrives, demanding this secret. Prometheus refuses to speak. The play ends with Zeus unleashing a cataclysm, casting Prometheus into the underworld with tortures of lightning and organ-devouring beasts.</p>
+                                        <PlotBlock title="Context: The Conflict" index={1}>
+                                            <p>This play focuses on the relationship between <strong>Prometheus</strong> and <strong>Zeus</strong>. Prometheus, a Titan, originally helped Zeus overthrow the old gods (Cronos). However, when Zeus wanted to destroy humanity, Prometheus saved them by stealing fire and teaching them arts and sciences (knowledge). This act of defiance against Zeus's tyranny is the core conflict. Zeus represents brute force and new, harsh power, while Prometheus represents knowledge and resilience. The play is a static depiction of Prometheus bound to a rock, refusing to submit or reveal a secret prophecy that could lead to Zeus's downfall.</p>
                                         </PlotBlock>
                                     </div>
+                                    <div className="mt-6 p-4 bg-stone-100 border border-stone-300 rounded text-sm text-stone-600 italic">
+                                        <strong>Note:</strong> We were not asked to dive deep into the specific plot points or minor character interactions of this play, only the context and the central relationship between Prometheus and Zeus.
+                                    </div>
                                 </div>
-
-                                <AnalysisSection title="Themes" items={[
-                                    {term: "Tyranny", def: "Zeus is portrayed as a classic tyrant: brutal, mistrustful, and stubborn. He rules by new laws he made up and relies on brute force (Strength/Violence). He oppresses both gods and humans."},
-                                    {term: "Knowledge vs. Brute Force", def: "Prometheus (Forethought) represents the power of knowledge, while Zeus relies on physical might. Prometheus knows that cunning, not force, determines the future. His secret knowledge gives him power over Zeus."},
-                                    {term: "Compassion for Humanity", def: "Prometheus is punished because he cared for 'wretched humans' whom Zeus wanted to annihilate. He gave them fire, arts, and science, elevating them from brutes to civilized beings."},
-                                    {term: "Suffering", def: "The play explores unjust suffering. Io and Prometheus are both victims of Zeus. It raises questions about the cost of standing up for what is right against supreme power."}
-                                ]} />
                             </div>
                         )}
 
@@ -1041,6 +1013,76 @@
                         {activeTab === 'qbank' && (
                             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <ClassicalHeader title="Question Bank" subtitle="Essay Models & Critical Thinking" icon={FileQuestion} />
+                                
+                                <div className="space-y-8 mb-12">
+                                    <div className="bg-[#2c3e50] text-amber-50 px-6 py-4 rounded-lg flex items-center justify-between border-l-4 border-[#b48e43]">
+                                        <span className="font-serif font-bold text-xl">Category: Literary Definitions</span>
+                                        <BookOpen className="text-[#b48e43]"/>
+                                    </div>
+
+                                    <QuestionBlock question="Q: Define Peripeteia & Anagnorisis.">
+                                        <p><strong>Peripeteia</strong> (Reversal) is a sudden turn of events or reversal of fortune, often occurring at the climax of a tragedy (e.g., from good to bad). <strong>Anagnorisis</strong> (Recognition) is the moment of discovery where a character passes from ignorance to knowledge, realizing their true situation or identity. They often happen together.</p>
+                                    </QuestionBlock>
+                                    
+                                     <QuestionBlock question="Q: What is Deus ex Machina?">
+                                        <p>Latin for "God from the machine." It refers to an artificial plot device where a god is lowered onto the stage (via a crane) to solve a seemingly unsolvable problem at the end of a play. Critics often view it as a weakness in the plot because the resolution does not come naturally from the internal logic of the story.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: What is the Chorus?">
+                                        <p>In Greek drama, the <strong>Chorus</strong> is a group of performers who comment on the main action, typically speaking and moving together. They represent the collective voice of the community or citizens and often provide background context or moral judgment.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Define Mimesis.">
+                                        <p><strong>Mimesis</strong> is the Greek word for "imitation" or "representation." In literary criticism (starting with Aristotle), it refers to the idea that art and literature are an imitation of reality or human action.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Define Hamartia.">
+                                        <p><strong>Hamartia</strong> is a "tragic flaw" or error in judgment that leads to the downfall of a tragic hero. It is not necessarily a sin, but an inherent quality (like ambition or pride) that causes their ruin.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: What is Greek Comedy?">
+                                        <p><strong>Greek Comedy</strong> is an ancient dramatic genre characterized by satire, humor, and political commentary. <strong>Old Comedy</strong> (like Aristophanes) is known for bold fantasy, personal attacks, and a prominent chorus. It often critiques society and politics.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: What is Romantic Comedy?">
+                                        <p><strong>Romantic Comedy</strong> is a genre that focuses on love and the overcoming of obstacles to achieve a happy union (usually marriage). It often involves disguises, misunderstandings, and a journey to a natural setting (Green World) where problems are resolved.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Explain Metaphor in Romantic Poetry.">
+                                        <p>Romantic poets often used nature as a metaphor for freedom, truth, and escape from the corruption of city life. They focused on emotional and spiritual connection with nature, contrasting the purity of the wild with the artificiality of society.</p>
+                                    </QuestionBlock>
+                                    
+                                    <QuestionBlock question="Q: Who were The Romantic Poets?">
+                                        <p>The Romantic Poets were writers (late 18th-19th century) who emphasized emotion, nature, and individualism. While inspired by Greek themes of escaping to nature (like in <em>The Birds</em>), they sought spiritual truth rather than just political satire.</p>
+                                    </QuestionBlock>
+                                </div>
+
+                                <div className="space-y-8 mb-12">
+                                    <div className="bg-[#2c3e50] text-amber-50 px-6 py-4 rounded-lg flex items-center justify-between border-l-4 border-[#b48e43]">
+                                        <span className="font-serif font-bold text-xl">Category: Mythology & Figures</span>
+                                        <Star className="text-[#b48e43]"/>
+                                    </div>
+
+                                    <QuestionBlock question="Q: Who is Zeus?">
+                                        <p><strong>Zeus</strong> is the King of the Olympian gods and ruler of the sky, thunder, and justice. In <em>Prometheus Bound</em>, he is portrayed as a new, tyrannical ruler who governs by brute force and oppression.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: Who is Prometheus?">
+                                        <p><strong>Prometheus</strong> ("Forethinker") is a Titan who defied Zeus to help humanity. He is a champion of mankind, known for stealing fire from the gods and giving it to humans along with knowledge and arts. He represents resilience and intellect against tyranny.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: What is Metamorphosis?">
+                                        <p><strong>Metamorphosis</strong> refers to a transformation or change in form. In Greek mythology, it is common for gods or humans to be transformed into animals, plants, or other forms (e.g., Io turning into a cow, Tereus into a bird).</p>
+                                    </QuestionBlock>
+                                    
+                                    <QuestionBlock question="Q: Who is Eros?">
+                                        <p><strong>Eros</strong> is the Greek god of love and desire. In some myths (and in <em>The Birds</em>), he is considered one of the primordial forces from which other life and gods sprang.</p>
+                                    </QuestionBlock>
+
+                                    <QuestionBlock question="Q: What is Greek Mythology?">
+                                        <p><strong>Greek Mythology</strong> is the body of myths and legends belonging to the ancient Greeks concerning their gods, heroes, and the nature of the world. It served as the foundation for their religion, literature, and cultural values.</p>
+                                    </QuestionBlock>
+                                </div>
                                 
                                 {/* The Birds Questions */}
                                 <div className="space-y-8 mb-12">
@@ -1196,18 +1238,6 @@
                                         <strong>2. Unravelling (Lysis):</strong> The resolution after the climax. It often involves <strong>Pathos</strong> (a scene of suffering), such as Oedipus blinding himself, which leads to Catharsis in the audience.</p>
                                     </QuestionBlock>
 
-                                    <QuestionBlock question="Q: Define Hamartia and provide examples.">
-                                        <p><strong>Hamartia</strong> is the "tragic flaw" or error in judgment that causes the protagonist's downfall from a high status. It is not necessarily a sin, but a mistake inherent in their character.
-                                        <br/><br/>
-                                        <strong>Examples:</strong>
-                                        <ul className="list-disc pl-5 my-2">
-                                            <li><strong>Macbeth:</strong> Vaulting Ambition.</li>
-                                            <li><strong>Othello:</strong> Over-jealousy.</li>
-                                            <li><strong>Hamlet:</strong> Hesitation/Indecision.</li>
-                                            <li><strong>King Lear:</strong> Rashness.</li>
-                                        </ul></p>
-                                    </QuestionBlock>
-
                                     <QuestionBlock question="Q: Distinguish between the types of Comedy.">
                                         <p><ul className="list-disc pl-5 space-y-2">
                                             <li><strong>Romantic Comedy:</strong> Focuses on love and overcoming obstacles to achieve a happy union (e.g., <em>As You Like It</em>). Often involves disguise and a "Green World" (forest/nature) where characters gain insight before returning to the city.</li>
@@ -1215,10 +1245,6 @@
                                             <li><strong>Comedy of Humors:</strong> Based on the four bodily humors (Blood, Phlegm, Choler, Melancholy). Characters are driven by a single dominant trait that cannot be changed (e.g., a stingy man is inherently stingy).</li>
                                             <li><strong>Satiric Comedy:</strong> Uses irony and exaggeration to mock public figures and politics (e.g., Aristophanes).</li>
                                         </ul></p>
-                                    </QuestionBlock>
-
-                                    <QuestionBlock question="Q: What is Deus ex Machina?">
-                                        <p>Latin for "God from the machine." It refers to an artificial plot device where a god is lowered onto the stage (via a crane) to solve a seemingly unsolvable problem at the end of a play. Critics often view it as a weakness in the plot because the resolution does not come naturally from the internal logic of the story.</p>
                                     </QuestionBlock>
                                 </div>
                             </div>
